@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/et_add_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:hint="@string/name"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.05" />
+
+    <EditText
+        android:id="@+id/et_add_season"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="@string/season"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="@+id/et_add_name"
+        app:layout_constraintStart_toStartOf="@+id/et_add_name"
+        app:layout_constraintTop_toBottomOf="@+id/et_add_name" />
+
+    <EditText
+        android:id="@+id/et_add_episodes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="@string/episodes"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="@+id/et_add_season"
+        app:layout_constraintStart_toStartOf="@+id/et_add_season"
+        app:layout_constraintTop_toBottomOf="@+id/et_add_season" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/linearLayoutCompat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="@+id/et_add_episodes"
+        app:layout_constraintStart_toStartOf="@+id/et_add_episodes"
+        app:layout_constraintTop_toBottomOf="@+id/et_add_episodes">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/airtime"
+            android:textSize="20sp" />
+
+        <CalendarView
+            android:id="@+id/cv_add_airtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <org.angmarch.views.NiceSpinner
+        android:id="@+id/ns_add_state"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/state"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
+        app:layout_constraintStart_toStartOf="@+id/et_add_episodes"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat" />
+
+    <Button
+        android:id="@+id/btn_add_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/confirm"
+        app:layout_constraintEnd_toEndOf="@+id/ns_add_state"
+        app:layout_constraintStart_toStartOf="@+id/ns_add_state"
+        app:layout_constraintTop_toBottomOf="@+id/ns_add_state" />
+</androidx.constraintlayout.widget.ConstraintLayout>

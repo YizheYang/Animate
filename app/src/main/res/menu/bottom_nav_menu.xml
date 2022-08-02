@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:orderInCategory="0"
+        android:id="@+id/today"
+        android:title="@string/today"
+        android:icon="@drawable/ic_baseline_today_24"/>
+
+    <item
+        android:orderInCategory="1"
+        android:id="@+id/list"
+        android:title="@string/animateList"
+        android:icon="@drawable/ic_baseline_list_alt_24"/>
+</menu>

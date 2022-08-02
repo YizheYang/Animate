@@ -1,0 +1,55 @@
+package com.yyz.animate.functions.list
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.yyz.animate.R
+import com.yyz.animate.entity.AnimateInfoBean
+import kotlinx.android.synthetic.main.item_item_list.view.*
+
+/**
+ * description none
+ * author ez_yang@qq.com
+ * date 2022.7.31 下午 10:56
+ * version 1.0
+ * update none
+ **/
+class AnimateAdapter(private val list: List<AnimateInfoBean>) :
+    RecyclerView.Adapter<AnimateAdapter.AnimateViewHolder>() {
+    inner class AnimateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val animate: TextView = itemView.tv_item_itemList
+    }
+
+    interface OnItemClickListener {
+        fun onAnimateClick(id: Int)
+
+        fun onLongClick(id: Int)
+    }
+
+    private var onItemClickListener: OnItemClickListener? = null
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimateViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_item_list, parent, false)
+        val holder = AnimateViewHolder(view)
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.onAnimateClick(list[holder.adapterPosition].id ?: -1)
+        }
+        holder.itemView.setOnLongClickListener {
+            onItemClickListener?.onLongClick(list[holder.adapterPosition].id ?: -1)
+            true
+        }
+        return holder
+    }
+
+    override fun onBindViewHolder(holder: AnimateViewHolder, position: Int) {
+        holder.animate.text = "第${list[position].season}季"
+    }
+
+    override fun getItemCount() = list.size
+
+    fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.onItemClickListener = onItemClickListener
+    }
+}

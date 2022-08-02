@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Animate</string>
+
+    <string name="today">今日</string>
+    <string name="animateList">追番列表</string>
+    <string name="test">测试</string>
+
+    <string name="name">番名</string>
+    <string name="season">季度</string>
+    <string name="episodes">集数</string>
+    <string name="state">状态</string>
+    <string name="airtime">开播时间</string>
+
+    <string name="confirm">确认</string>
+    <string name="edit">编辑</string>
+</resources>
