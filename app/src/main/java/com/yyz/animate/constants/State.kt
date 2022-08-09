@@ -7,9 +7,9 @@ package com.yyz.animate.constants
  * version 1.0
  * update none
  **/
-enum class State(val state: Int) {
+enum class State(val stateNum: Int, val state: String) {
     // 1还没看，2正在看，3看完了
-    WILL(1),
-    WATCHING(2),
-    ALREADY(3)
+    WILL(1, "还没看"),
+    WATCHING(2, "正在看"),
+    ALREADY(3, "已看完")
 }

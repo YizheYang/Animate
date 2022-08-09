@@ -93,5 +93,6 @@ class InfoActivity : BaseActivity() {
             .append("第").append(animateInfoBean.season).append("季")
         tv_info_name.text = sb.toString()
         tv_info_time.text = DateConverter.converter(animateInfoBean.airTime)
+        tv_info_state.text = animateInfoBean.state.state
     }
 }

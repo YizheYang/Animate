@@ -14,7 +14,7 @@ class StateConverter {
 
     @TypeConverter
     fun converter(state: State): Int {
-        return state.state
+        return state.stateNum
     }
 
     @TypeConverter

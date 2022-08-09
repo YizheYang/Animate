@@ -61,7 +61,7 @@ class AddActivity : BaseActivity() {
     private var mode = 0//0=add,1=edit
 
     override fun initViews() {
-        ns_add_state.attachDataSource(listOf("还未看", "正在看", "已看完"))
+        ns_add_state.attachDataSource(listOf(State.WILL.state, State.WATCHING.state, State.ALREADY.state))
         val bundle = intent.getBundleExtra("bundle")
         if (bundle != null) {
             mode = 1
@@ -75,7 +75,7 @@ class AddActivity : BaseActivity() {
             et_add_season.isEnabled = false
             et_add_episodes.setText(animateInfoBean.episodes.toString())
             cv_add_airtime.date = animateInfoBean.airTime.time
-            ns_add_state.selectedIndex = animateInfoBean.state.state - 1
+            ns_add_state.selectedIndex = animateInfoBean.state.stateNum - 1
         } else if (mode == 0) {
             ns_add_state.selectedIndex = 0
         }
@@ -147,6 +147,7 @@ class AddActivity : BaseActivity() {
             } else {
                 if (mode == 0) {
                     // 找得到名字但是是新增，相当于只有第一季，现在添加第二季
+                    // TODO("这里目前因为在修改模式下屏蔽了季度，所以暂时用不到")
                     val season = et_add_season.text.toString().toInt()
                     val nameId =
                         db.getAnimateNameDao().getAnimateNameBeanFromName(et_add_name.text.toString())?.id ?: -1
@@ -215,7 +216,11 @@ class AddActivity : BaseActivity() {
                             } else {
                                 val list = mutableListOf<EpisodeState>()
                                 for (i in 1..episodes) {
-                                    list.add(EpisodeState(i, false))
+                                    if (i <= temp.episode.size) {
+                                        list.add(temp.episode[i - 1])
+                                    } else {
+                                        list.add(EpisodeState(i, false))
+                                    }
                                 }
                                 list
                             }

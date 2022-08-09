@@ -4,9 +4,14 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.yyz.animate.MainViewModel
 import com.yyz.animate.R
 import com.yyz.animate.base.BaseFragment
 import com.yyz.animate.entity.AnimateInfoBean
@@ -34,8 +39,10 @@ class ListFragment : BaseFragment() {
     private val animateList = mutableListOf<AnimateInfoBean>()
     private lateinit var nameAdapter: AnimateNameAdapter
     private lateinit var launcher: ActivityResultLauncher<Intent>
+    private lateinit var vm: MainViewModel
 
     override fun initViews() {
+        vm = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         nameList.addAll(db.getAnimateNameDao().getAnimateNameBeanList())
         animateList.addAll(db.getAnimateInfoDao().getAnimateInfoBeanList())
         nameAdapter = AnimateNameAdapter(nameList, animateList)
@@ -58,10 +65,14 @@ class ListFragment : BaseFragment() {
                     when (this) {
                         View.VISIBLE -> {
                             holder.arrow.setImageResource(R.drawable.ic_baseline_keyboard_arrow_right_24)
+                            hideYAnim(holder.recyclerView)
+//                            hideAlphaAnim(holder.ll_line)
                             View.GONE
                         }
                         View.GONE -> {
                             holder.arrow.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
+                            showYAnim(holder.recyclerView)
+//                            showAlphaAnim(holder.ll_line)
                             View.VISIBLE
                         }
                         else -> throw IllegalStateException()
@@ -109,6 +120,7 @@ class ListFragment : BaseFragment() {
 
 
     private fun refreshList() {
+        vm.refresh.value = true
         nameList.clear()
         animateList.clear()
         nameList.addAll(db.getAnimateNameDao().getAnimateNameBeanList())
@@ -116,4 +128,35 @@ class ListFragment : BaseFragment() {
         nameAdapter.notifyDataSetChanged()
     }
 
+    private fun showYAnim(viewGroup: ViewGroup) {
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.up_down)
+        val layoutAnimationController = LayoutAnimationController(animation)
+        layoutAnimationController.order = LayoutAnimationController.ORDER_NORMAL
+        layoutAnimationController.delay = 0.2f
+        viewGroup.layoutAnimation = layoutAnimationController
+    }
+
+    private fun hideYAnim(viewGroup: ViewGroup) {
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.down_up)
+        val layoutAnimationController = LayoutAnimationController(animation)
+        layoutAnimationController.order = LayoutAnimationController.ORDER_NORMAL
+        layoutAnimationController.delay = 0.2f
+        viewGroup.layoutAnimation = layoutAnimationController
+    }
+
+    private fun showAlphaAnim(viewGroup: ViewGroup) {
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.alpha_show)
+        val layoutAnimationController = LayoutAnimationController(animation)
+        layoutAnimationController.order = LayoutAnimationController.ORDER_NORMAL
+        layoutAnimationController.delay = 0.2f
+        viewGroup.layoutAnimation = layoutAnimationController
+    }
+
+    private fun hideAlphaAnim(viewGroup: ViewGroup) {
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.alpha_hide)
+        val layoutAnimationController = LayoutAnimationController(animation)
+        layoutAnimationController.order = LayoutAnimationController.ORDER_NORMAL
+        layoutAnimationController.delay = 0.2f
+        viewGroup.layoutAnimation = layoutAnimationController
+    }
 }

@@ -3,6 +3,7 @@ package com.yyz.animate.functions.list
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -22,9 +23,10 @@ class AnimateNameAdapter(private val nameList: List<AnimateNameBean>, private va
     RecyclerView.Adapter<AnimateNameAdapter.AnimateNameViewHolder>() {
     inner class AnimateNameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val animateName: TextView = itemView.tv_item_animate_name
-        val ll = itemView.ll
+        val ll_name = itemView.ll_list_name
         val recyclerView: RecyclerView = itemView.rv_item_list
         val arrow: ImageView = itemView.iv_list_arrow
+        val ll_line = itemView.ll_line
     }
 
     interface OnItemClickListener {
@@ -42,10 +44,10 @@ class AnimateNameAdapter(private val nameList: List<AnimateNameBean>, private va
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AnimateNameViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_list, parent, false)
         val holder = AnimateNameViewHolder(view)
-        holder.ll.setOnClickListener {
+        holder.ll_name.setOnClickListener {
             onItemClickListener?.onNameClick(holder)
         }
-        holder.ll.setOnLongClickListener {
+        holder.ll_name.setOnLongClickListener {
             onItemClickListener?.onNameLongClick(nameList[holder.adapterPosition].id ?: -1)
             true
         }

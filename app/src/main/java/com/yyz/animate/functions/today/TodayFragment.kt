@@ -1,8 +1,11 @@
 package com.yyz.animate.functions.today
 
+import androidx.lifecycle.ViewModelProvider
+import com.yyz.animate.MainViewModel
 import com.yyz.animate.R
 import com.yyz.animate.base.BaseFragment
 import com.yyz.animate.entity.AnimateInfoBean
+import com.yyz.animate.entity.AnimateNameBean
 import com.yyz.animate.entity.EpisodeState
 import kotlinx.android.synthetic.main.fragment_today.*
 import java.util.*
@@ -23,19 +26,25 @@ class TodayFragment : BaseFragment() {
     override fun getLayoutId() = R.layout.fragment_today
 
     private lateinit var adapter: TodayAdapter
+    private val infoList = mutableListOf<AnimateInfoBean>()
+    private val nameList = mutableListOf<AnimateNameBean>()
+    private lateinit var vm: MainViewModel
 
     override fun initViews() {
+        vm = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         updateData()
-        tv_today_title.text = "今天有${
-            db.getAnimateInfoDao()
-                .getAnimateInfoBeanListFromUpdateDay((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1)
-                .size
-        }部番更新"
-        adapter = TodayAdapter(
-            db.getAnimateInfoDao()
-                .getAnimateInfoBeanListFromUpdateDay((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1),
-            db.getAnimateNameDao().getAnimateNameBeanList()
+        val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
+//        tv_today_title.text = "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新"
+        ns_today.attachDataSource(
+            listOf(
+                "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新",
+                "周一", "周二", "周三", "周四", "周五", "周六", "周日"
+            )
         )
+
+        infoList.addAll(db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today))
+        nameList.addAll(db.getAnimateNameDao().getAnimateNameBeanList())
+        adapter = TodayAdapter(infoList, nameList)
         rv_today.adapter = adapter
     }
 
@@ -47,6 +56,38 @@ class TodayFragment : BaseFragment() {
                 toast("看完了")
             }
         })
+
+        vm.refresh.observe(requireActivity()) {
+            if (it == true) {
+                updateData()
+                val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
+//                tv_today_title.text = "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新"
+                ns_today.attachDataSource(
+                    listOf(
+                        "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新",
+                        "周一", "周二", "周三", "周四", "周五", "周六", "周日"
+                    )
+                )
+                infoList.clear()
+                infoList.addAll(db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today))
+                adapter.notifyDataSetChanged()
+                vm.refresh.value = false
+            }
+        }
+
+        ns_today.setOnSpinnerItemSelectedListener { parent, view, position, id ->
+            infoList.clear()
+            infoList.addAll(
+                db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(
+                    if (position == 0) {
+                        (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
+                    } else {
+                        position
+                    }
+                )
+            )
+            adapter.notifyDataSetChanged()
+        }
     }
 
     private fun updateData() {
@@ -54,8 +95,12 @@ class TodayFragment : BaseFragment() {
             (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
         )
         for (temp in tempList) {
-            if (temp.episode.size <= ((Date(System.currentTimeMillis()).time - temp.airTime.time) / (1000 * 60 * 60 * 24 * 7)).toInt()) {
-                temp.episode.add(EpisodeState(temp.episode.size + 1, false))
+            val weeks =
+                ((Date(System.currentTimeMillis()).time - temp.airTime.time) / (1000 * 60 * 60 * 24 * 7)).toInt()
+            if (temp.episode.size <= weeks) {
+                for (i in temp.episode.size..weeks) {
+                    temp.episode.add(EpisodeState(temp.episode.size + 1, false))
+                }
                 db.getAnimateInfoDao().updateAnimateInfoBean(temp)
             }
         }
