@@ -25,9 +25,19 @@
         android:layout_marginTop="24dp"
         android:hint="@string/season"
         android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@+id/et_add_name"
+        app:layout_constraintEnd_toStartOf="@+id/ns_add_type"
         app:layout_constraintStart_toStartOf="@+id/et_add_name"
         app:layout_constraintTop_toBottomOf="@+id/et_add_name" />
+
+    <org.angmarch.views.NiceSpinner
+        android:id="@+id/ns_add_type"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/type"
+        app:layout_constraintBottom_toBottomOf="@+id/et_add_season"
+        app:layout_constraintEnd_toEndOf="@+id/et_add_name"
+        app:layout_constraintStart_toEndOf="@+id/et_add_season"
+        app:layout_constraintTop_toTopOf="@+id/et_add_season" />
 
     <EditText
         android:id="@+id/et_add_episodes"
@@ -36,8 +46,8 @@
         android:layout_marginTop="24dp"
         android:hint="@string/episodes"
         android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@+id/et_add_season"
-        app:layout_constraintStart_toStartOf="@+id/et_add_season"
+        app:layout_constraintEnd_toEndOf="@+id/et_add_name"
+        app:layout_constraintStart_toStartOf="@+id/et_add_name"
         app:layout_constraintTop_toBottomOf="@+id/et_add_season" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -45,8 +55,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="@+id/et_add_episodes"
-        app:layout_constraintStart_toStartOf="@+id/et_add_episodes"
+        app:layout_constraintEnd_toEndOf="@+id/et_add_name"
+        app:layout_constraintStart_toStartOf="@+id/et_add_name"
         app:layout_constraintTop_toBottomOf="@+id/et_add_episodes">
 
         <TextView

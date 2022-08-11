@@ -3,7 +3,8 @@ package com.yyz.animate.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.yyz.animate.constants.State
+import com.yyz.animate.constants.AnimateState
+import com.yyz.animate.constants.AnimateType
 import java.util.*
 
 /**
@@ -22,10 +23,11 @@ data class AnimateInfoBean(
     val season: Int,
     val episodes: Int,
     val episode: MutableList<EpisodeState>,
-    val state: State,
+    val state: AnimateState,
     @ColumnInfo(name = "init_time")
     val initTime: Date,
     val airTime: Date,// 首播时间
     @ColumnInfo(name = "update_day")
-    val updateDay: Int// 更新时间
+    val updateDay: Int,// 更新时间
+    val type: AnimateType
 )

@@ -7,7 +7,7 @@ package com.yyz.animate.constants
  * version 1.0
  * update none
  **/
-enum class State(val stateNum: Int, val state: String) {
+enum class AnimateState(val id: Int, val state: String) {
     // 1还没看，2正在看，3看完了
     WILL(1, "还没看"),
     WATCHING(2, "正在看"),

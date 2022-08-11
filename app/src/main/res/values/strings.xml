@@ -9,6 +9,7 @@
     <string name="season">季度</string>
     <string name="episodes">集数</string>
     <string name="state">状态</string>
+    <string name="type">类型</string>
     <string name="airtime">开播时间</string>
 
     <string name="confirm">确认</string>

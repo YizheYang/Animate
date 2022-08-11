@@ -11,5 +11,8 @@ object Constants {
     const val WATCHING = 2
 
     const val formatType = "yyyy-MM-dd E"
+
+    const val MOVIE = 2
 }
+
 const val TAG = "tagtag"

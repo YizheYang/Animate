@@ -6,7 +6,8 @@ import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import com.yyz.animate.R
 import com.yyz.animate.base.BaseActivity
-import com.yyz.animate.constants.State
+import com.yyz.animate.constants.AnimateState
+import com.yyz.animate.constants.AnimateType
 import com.yyz.animate.entity.AnimateInfoBean
 import com.yyz.animate.entity.AnimateNameBean
 import com.yyz.animate.entity.EpisodeState
@@ -61,7 +62,14 @@ class AddActivity : BaseActivity() {
     private var mode = 0//0=add,1=edit
 
     override fun initViews() {
-        ns_add_state.attachDataSource(listOf(State.WILL.state, State.WATCHING.state, State.ALREADY.state))
+        ns_add_type.attachDataSource(listOf(AnimateType.TV, AnimateType.MOVIE, AnimateType.OVA))
+        ns_add_state.attachDataSource(
+            listOf(
+                AnimateState.WILL.state,
+                AnimateState.WATCHING.state,
+                AnimateState.ALREADY.state
+            )
+        )
         val bundle = intent.getBundleExtra("bundle")
         if (bundle != null) {
             mode = 1
@@ -75,19 +83,32 @@ class AddActivity : BaseActivity() {
             et_add_season.isEnabled = false
             et_add_episodes.setText(animateInfoBean.episodes.toString())
             cv_add_airtime.date = animateInfoBean.airTime.time
-            ns_add_state.selectedIndex = animateInfoBean.state.stateNum - 1
+            ns_add_state.selectedIndex = animateInfoBean.state.id - 1
+            ns_add_type.selectedIndex = animateInfoBean.type.id - 1
+            ns_add_type.isEnabled = false
         } else if (mode == 0) {
             ns_add_state.selectedIndex = 0
         }
     }
 
     override fun initListener() {
-        var date = db.getAnimateInfoDao()
-            .getAnimateInfoBeanFromId(intent.getBundleExtra("bundle")?.getInt("id") ?: -1)?.initTime ?: Date(0)
+        var date = db.getAnimateInfoDao().getAnimateInfoBeanFromId(
+            intent.getBundleExtra("bundle")?.getInt("id") ?: -1
+        )?.initTime ?: Date(0)
+
         cv_add_airtime.setOnDateChangeListener { view, year, month, dayOfMonth ->
             val c = Calendar.getInstance()
             c.set(year, month, dayOfMonth)
             date = c.time
+        }
+
+        ns_add_type.setOnSpinnerItemSelectedListener { parent, view, position, id ->
+            if (position == AnimateType.MOVIE.id - 1) {
+                et_add_episodes.setText("1")
+                et_add_episodes.isEnabled = false
+            } else {
+                et_add_episodes.isEnabled = true
+            }
         }
 
         btn_add_confirm.setOnClickListener {
@@ -130,10 +151,10 @@ class AddActivity : BaseActivity() {
                         }
                     },
                     when (ns_add_state.selectedIndex) {
-                        0 -> State.WILL
-                        1 -> State.WATCHING
-                        2 -> State.ALREADY
-                        else -> State.WILL
+                        0 -> AnimateState.WILL
+                        1 -> AnimateState.WATCHING
+                        2 -> AnimateState.ALREADY
+                        else -> AnimateState.WILL
                     },
                     Date(System.currentTimeMillis()),
                     date,
@@ -141,6 +162,12 @@ class AddActivity : BaseActivity() {
                         val c = Calendar.getInstance()
                         c.time = date
                         return@run (c.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
+                    },
+                    when (ns_add_type.selectedIndex) {
+                        0 -> AnimateType.TV
+                        1 -> AnimateType.MOVIE
+                        2 -> AnimateType.OVA
+                        else -> AnimateType.TV
                     }
                 )
                 db.getAnimateInfoDao().insertAnimateInfoBean(tempInfo)
@@ -180,10 +207,10 @@ class AddActivity : BaseActivity() {
                             }
                         },
                         when (ns_add_state.selectedIndex) {
-                            0 -> State.WILL
-                            1 -> State.WATCHING
-                            2 -> State.ALREADY
-                            else -> State.WILL
+                            0 -> AnimateState.WILL
+                            1 -> AnimateState.WATCHING
+                            2 -> AnimateState.ALREADY
+                            else -> AnimateState.WILL
                         },
                         Date(System.currentTimeMillis()),
                         date,
@@ -191,6 +218,12 @@ class AddActivity : BaseActivity() {
                             val c = Calendar.getInstance()
                             c.time = date
                             return@run (c.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
+                        },
+                        when (ns_add_type.selectedIndex) {
+                            0 -> AnimateType.TV
+                            1 -> AnimateType.MOVIE
+                            2 -> AnimateType.OVA
+                            else -> AnimateType.TV
                         }
                     )
                     db.getAnimateInfoDao().insertAnimateInfoBean(tempInfo)
@@ -226,10 +259,10 @@ class AddActivity : BaseActivity() {
                             }
                         },
                         when (ns_add_state.selectedIndex) {
-                            0 -> State.WILL
-                            1 -> State.WATCHING
-                            2 -> State.ALREADY
-                            else -> State.WILL
+                            0 -> AnimateState.WILL
+                            1 -> AnimateState.WATCHING
+                            2 -> AnimateState.ALREADY
+                            else -> AnimateState.WILL
                         },
                         temp.initTime,
                         date,
@@ -237,6 +270,12 @@ class AddActivity : BaseActivity() {
                             val c = Calendar.getInstance()
                             c.time = date
                             (c.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
+                        },
+                        when (ns_add_type.selectedIndex) {
+                            0 -> AnimateType.TV
+                            1 -> AnimateType.MOVIE
+                            2 -> AnimateType.OVA
+                            else -> AnimateType.TV
                         }
                     )
                     db.getAnimateInfoDao().updateAnimateInfoBean(tempInfo)

@@ -34,7 +34,6 @@ class TodayFragment : BaseFragment() {
         vm = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         updateData()
         val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-//        tv_today_title.text = "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新"
         ns_today.attachDataSource(
             listOf(
                 "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新",
@@ -61,7 +60,6 @@ class TodayFragment : BaseFragment() {
             if (it == true) {
                 updateData()
                 val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-//                tv_today_title.text = "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新"
                 ns_today.attachDataSource(
                     listOf(
                         "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新",

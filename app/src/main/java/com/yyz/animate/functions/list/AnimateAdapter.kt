@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yyz.animate.R
+import com.yyz.animate.constants.AnimateType
 import com.yyz.animate.entity.AnimateInfoBean
 import kotlinx.android.synthetic.main.item_item_list.view.*
 
@@ -44,7 +45,16 @@ class AnimateAdapter(private val list: List<AnimateInfoBean>) :
     }
 
     override fun onBindViewHolder(holder: AnimateViewHolder, position: Int) {
-        holder.animate.text = "第${list[position].season}季"
+        val sb = StringBuilder()
+        list[position].let {
+            when (it.type) {
+                AnimateType.MOVIE -> sb.append("剧场版").append(" ")
+                AnimateType.OVA -> sb.append("OVA").append(" ")
+                else -> {}
+            }
+            sb.append("第").append(it.season).append("季")
+        }
+        holder.animate.text = sb.toString()
     }
 
     override fun getItemCount() = list.size
