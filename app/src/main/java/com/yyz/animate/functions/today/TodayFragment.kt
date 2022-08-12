@@ -37,7 +37,7 @@ class TodayFragment : BaseFragment() {
         ns_today.attachDataSource(
             listOf(
                 "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新",
-                "周一", "周二", "周三", "周四", "周五", "周六", "周日"
+                "周一", "周二", "周三", "周四", "周五", "周六", "周日", "本周未看"
             )
         )
 
@@ -63,7 +63,7 @@ class TodayFragment : BaseFragment() {
                 ns_today.attachDataSource(
                     listOf(
                         "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新",
-                        "周一", "周二", "周三", "周四", "周五", "周六", "周日"
+                        "周一", "周二", "周三", "周四", "周五", "周六", "周日", "本周未看"
                     )
                 )
                 infoList.clear()
@@ -74,15 +74,28 @@ class TodayFragment : BaseFragment() {
         }
 
         ns_today.setOnSpinnerItemSelectedListener { parent, view, position, id ->
+            val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
             infoList.clear()
             infoList.addAll(
-                db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(
-                    if (position == 0) {
-                        (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-                    } else {
-                        position
+                if (position == 8) {
+                    val temp = mutableListOf<AnimateInfoBean>()
+                    for (i in 1..today) {
+                        temp.addAll(
+                            db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(i)
+                                .filter { !it.episode.last().already }
+                        )
                     }
-                )
+                    temp
+                } else {
+                    db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(
+                        if (position == 0) {
+                            today
+                        } else {
+                            position
+                        }
+                    )
+                }
+
             )
             adapter.notifyDataSetChanged()
         }
@@ -95,10 +108,8 @@ class TodayFragment : BaseFragment() {
         for (temp in tempList) {
             val weeks =
                 ((Date(System.currentTimeMillis()).time - temp.airTime.time) / (1000 * 60 * 60 * 24 * 7)).toInt()
-            if (temp.episode.size <= weeks) {
-                for (i in temp.episode.size..weeks) {
-                    temp.episode.add(EpisodeState(temp.episode.size + 1, false))
-                }
+            while (temp.episode.size <= weeks) {
+                temp.episode.add(EpisodeState(temp.episode.size + 1, false))
                 db.getAnimateInfoDao().updateAnimateInfoBean(temp)
             }
         }

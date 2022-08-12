@@ -80,8 +80,6 @@ class InfoActivity : BaseActivity() {
         })
 
         btn_info_edit.setOnClickListener {
-//            AddActivity.edit(this, id)
-
             AddActivity.edit(this, id, launcher)
         }
     }

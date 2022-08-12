@@ -12,6 +12,8 @@ object Constants {
 
     const val formatType = "yyyy-MM-dd E"
 
+    const val TV = 1
+
     const val MOVIE = 2
 }
 

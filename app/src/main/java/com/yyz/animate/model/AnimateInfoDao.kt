@@ -25,7 +25,7 @@ interface AnimateInfoDao {
     @Query("SELECT * FROM animate_info WHERE name_id == :nameId")
     fun getAnimateInfoBeanListFromNameId(nameId: Int): List<AnimateInfoBean>
 
-    @Query("SELECT * FROM animate_info WHERE state == ${Constants.WATCHING} and type != ${Constants.MOVIE} and update_day == :updateDay")
+    @Query("SELECT * FROM animate_info WHERE state == ${Constants.WATCHING} and type == ${Constants.TV} and update_day == :updateDay")
     fun getAnimateInfoBeanListFromUpdateDay(updateDay: Int): List<AnimateInfoBean>
 
     @Update
