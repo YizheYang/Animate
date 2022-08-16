@@ -3,13 +3,11 @@ package com.yyz.animate.functions.list
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yyz.animate.R
-import com.yyz.animate.entity.AnimateInfoBean
-import com.yyz.animate.entity.AnimateNameBean
+import com.yyz.animate.entity.NameWithInfo
 import kotlinx.android.synthetic.main.item_list.view.*
 
 /**
@@ -19,7 +17,7 @@ import kotlinx.android.synthetic.main.item_list.view.*
  * version 1.0
  * update none
  **/
-class AnimateNameAdapter(private val nameList: List<AnimateNameBean>, private val animateList: List<AnimateInfoBean>) :
+class AnimateNameAdapter(private var list: List<NameWithInfo>) :
     RecyclerView.Adapter<AnimateNameAdapter.AnimateNameViewHolder>() {
     inner class AnimateNameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val animateName: TextView = itemView.tv_item_animate_name
@@ -48,15 +46,15 @@ class AnimateNameAdapter(private val nameList: List<AnimateNameBean>, private va
             onItemClickListener?.onNameClick(holder)
         }
         holder.ll_name.setOnLongClickListener {
-            onItemClickListener?.onNameLongClick(nameList[holder.adapterPosition].id ?: -1)
+            onItemClickListener?.onNameLongClick(list[holder.adapterPosition].nameBean.id ?: -1)
             true
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: AnimateNameViewHolder, position: Int) {
-        holder.animateName.text = nameList[position].name
-        val adapter = AnimateAdapter(animateList.filter { it.nameId == nameList[position].id })
+        holder.animateName.text = list[position].nameBean.name
+        val adapter = AnimateAdapter(list[position].infoBean)
         holder.recyclerView.adapter = adapter
         adapter.setOnItemClickListener(object : AnimateAdapter.OnItemClickListener {
             // 解决不了嵌套adapter传递值和初始化顺序的问题，只能先把监听器放这个方法里
@@ -72,9 +70,14 @@ class AnimateNameAdapter(private val nameList: List<AnimateNameBean>, private va
         })
     }
 
-    override fun getItemCount() = nameList.size
+    override fun getItemCount() = list.size
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
         this.onItemClickListener = onItemClickListener
+    }
+
+    fun setNewData(list: List<NameWithInfo>) {
+        this.list = list
+        notifyDataSetChanged()
     }
 }

@@ -15,9 +15,10 @@ import java.util.*
 @Entity(tableName = "animate_name")
 data class AnimateNameBean(
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "name_id")
     val id: Int?,
     val name: String,
-    @ColumnInfo(name = "init_time")
+    @ColumnInfo(name = "name_inittime")
     val initTime: Date,
     @ColumnInfo(name = "latest_time")
     val latestTime: Date,

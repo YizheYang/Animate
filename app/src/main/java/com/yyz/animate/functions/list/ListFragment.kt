@@ -1,21 +1,9 @@
 package com.yyz.animate.functions.list
 
 import android.app.AlertDialog
-import android.content.Intent
-import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
-import android.view.animation.AnimationUtils
-import android.view.animation.LayoutAnimationController
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.yyz.animate.MainViewModel
 import com.yyz.animate.R
 import com.yyz.animate.base.BaseFragment
-import com.yyz.animate.entity.AnimateInfoBean
-import com.yyz.animate.entity.AnimateNameBean
 import com.yyz.animate.functions.Add.AddActivity
 import com.yyz.animate.functions.Info.InfoActivity
 import kotlinx.android.synthetic.main.fragment_list.*
@@ -35,44 +23,31 @@ class ListFragment : BaseFragment() {
 
     override fun getLayoutId() = R.layout.fragment_list
 
-    private val nameList = mutableListOf<AnimateNameBean>()
-    private val animateList = mutableListOf<AnimateInfoBean>()
     private lateinit var nameAdapter: AnimateNameAdapter
-    private lateinit var launcher: ActivityResultLauncher<Intent>
-    private lateinit var vm: MainViewModel
 
     override fun initViews() {
-        vm = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        nameList.addAll(db.getAnimateNameDao().getAnimateNameBeanList())
-        animateList.addAll(db.getAnimateInfoDao().getAnimateInfoBeanList())
-        nameAdapter = AnimateNameAdapter(nameList, animateList)
-        rv_list.adapter = nameAdapter
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == AppCompatActivity.RESULT_OK) {
-                refreshList()
+        db.getAnimateNameDao().getNameWithInfoList().observe(requireActivity()) {
+            if (!::nameAdapter.isInitialized) {
+                nameAdapter = AnimateNameAdapter(it)
+                rv_list.adapter = nameAdapter
+                setAdapterListener()
+            } else {
+                nameAdapter.setNewData(it)
             }
         }
     }
 
-    override fun initListener() {
+    private fun setAdapterListener() {
         nameAdapter.setOnItemClickListener(object : AnimateNameAdapter.OnItemClickListener {
             override fun onNameClick(holder: AnimateNameAdapter.AnimateNameViewHolder) {
                 holder.recyclerView.visibility = holder.recyclerView.visibility.run {
                     when (this) {
                         View.VISIBLE -> {
                             holder.arrow.setImageResource(R.drawable.ic_baseline_keyboard_arrow_right_24)
-                            hideYAnim(holder.recyclerView)
-//                            hideAlphaAnim(holder.ll_line)
                             View.GONE
                         }
                         View.GONE -> {
                             holder.arrow.setImageResource(R.drawable.ic_baseline_keyboard_arrow_down_24)
-                            showYAnim(holder.recyclerView)
-//                            showAlphaAnim(holder.ll_line)
                             View.VISIBLE
                         }
                         else -> throw IllegalStateException()
@@ -85,78 +60,42 @@ class ListFragment : BaseFragment() {
             }
 
             override fun onNameLongClick(id: Int) {
-                val temp = db.getAnimateNameDao().getAnimateNameBeanFormId(id)!!
-                val builder = AlertDialog.Builder(requireContext())
-                builder.setMessage("是否要删除《" + temp.name + "》系列作品")
-                    .setTitle("警告")
-                    .setNegativeButton("取消") { dialog, which -> dialog.dismiss() }
-                    .setPositiveButton("确定") { dialog, which ->
-                        db.getAnimateNameDao().deleteAnimateNameBean(temp)
-                        db.getAnimateInfoDao().deleteAnimateInfoBeanFromNameId(id)
-                        refreshList()
-                    }
-                    .create().show()
+                db.getAnimateNameDao().getAnimateNameBeanFormId(id)?.let {
+                    AlertDialog.Builder(requireContext())
+                        .setMessage("是否要删除《" + it.name + "》系列作品")
+                        .setTitle("警告")
+                        .setNegativeButton("取消") { dialog, which -> dialog.dismiss() }
+                        .setPositiveButton("确定") { dialog, which ->
+                            db.getAnimateNameDao().deleteAnimateNameBean(it)
+                            db.getAnimateInfoDao().deleteAnimateInfoBeanFromNameId(id)
+                        }
+                        .create().show()
+                }
             }
 
             override fun onInfoLongClick(id: Int) {
-                val temp = db.getAnimateInfoDao().getAnimateInfoBeanFromId(id)!!
-                val tempName = db.getAnimateNameDao().getAnimateNameBeanFormId(temp.nameId)!!
-                val builder = AlertDialog.Builder(requireContext())
-                builder.setMessage("是否要删除《" + tempName.name + "》" + temp.season)
-                    .setTitle("警告")
-                    .setNegativeButton("取消") { dialog, which -> dialog.dismiss() }
-                    .setPositiveButton("确定") { dialog, which ->
-                        db.getAnimateInfoDao().deleteAnimateInfoBean(temp)
-                        refreshList()
+                db.getAnimateInfoDao().getAnimateInfoBeanFromId(id)?.let { info ->
+                    db.getAnimateNameDao().getAnimateNameBeanFormId(info.nameId)?.let { name ->
+                        AlertDialog.Builder(requireContext())
+                            .setMessage("是否要删除《" + name.name + "》" + info.season)
+                            .setTitle("警告")
+                            .setNegativeButton("取消") { dialog, which -> dialog.dismiss() }
+                            .setPositiveButton("确定") { dialog, which ->
+                                db.getAnimateInfoDao().deleteAnimateInfoBean(info)
+                            }
+                            .create().show()
                     }
-                    .create().show()
+
+                }
+
             }
         })
+    }
 
+    override fun initListener() {
         fab_list.setOnClickListener {
-            AddActivity.add(requireContext(), launcher)
+            AddActivity.add(requireContext())
         }
     }
 
-
-    private fun refreshList() {
-        vm.refresh.value = true
-        nameList.clear()
-        animateList.clear()
-        nameList.addAll(db.getAnimateNameDao().getAnimateNameBeanList())
-        animateList.addAll(db.getAnimateInfoDao().getAnimateInfoBeanList())
-        nameAdapter.notifyDataSetChanged()
-    }
-
-    private fun showYAnim(viewGroup: ViewGroup) {
-        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.up_down)
-        val layoutAnimationController = LayoutAnimationController(animation)
-        layoutAnimationController.order = LayoutAnimationController.ORDER_NORMAL
-        layoutAnimationController.delay = 0.2f
-        viewGroup.layoutAnimation = layoutAnimationController
-    }
-
-    private fun hideYAnim(viewGroup: ViewGroup) {
-        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.down_up)
-        val layoutAnimationController = LayoutAnimationController(animation)
-        layoutAnimationController.order = LayoutAnimationController.ORDER_NORMAL
-        layoutAnimationController.delay = 0.2f
-        viewGroup.layoutAnimation = layoutAnimationController
-    }
-
-    private fun showAlphaAnim(viewGroup: ViewGroup) {
-        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.alpha_show)
-        val layoutAnimationController = LayoutAnimationController(animation)
-        layoutAnimationController.order = LayoutAnimationController.ORDER_NORMAL
-        layoutAnimationController.delay = 0.2f
-        viewGroup.layoutAnimation = layoutAnimationController
-    }
-
-    private fun hideAlphaAnim(viewGroup: ViewGroup) {
-        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.alpha_hide)
-        val layoutAnimationController = LayoutAnimationController(animation)
-        layoutAnimationController.order = LayoutAnimationController.ORDER_NORMAL
-        layoutAnimationController.delay = 0.2f
-        viewGroup.layoutAnimation = layoutAnimationController
-    }
 }

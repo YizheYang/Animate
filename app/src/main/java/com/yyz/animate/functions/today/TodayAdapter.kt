@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yyz.animate.R
 import com.yyz.animate.entity.AnimateInfoBean
-import com.yyz.animate.entity.AnimateNameBean
+import com.yyz.animate.entity.InfoWithName
 import kotlinx.android.synthetic.main.item_today.view.*
 
 /**
@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.item_today.view.*
  * version 1.0
  * update none
  **/
-class TodayAdapter(private val animateList: List<AnimateInfoBean>, private val nameList: List<AnimateNameBean>) :
+class TodayAdapter(private var list: List<InfoWithName>) :
     RecyclerView.Adapter<TodayAdapter.TodayViewHolder>() {
 
     inner class TodayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -35,21 +35,26 @@ class TodayAdapter(private val animateList: List<AnimateInfoBean>, private val n
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_today, parent, false)
         val holder = TodayViewHolder(view)
         holder.itemView.setOnClickListener {
-            onItemClickListener?.onItemClick(animateList[holder.adapterPosition])
+            onItemClickListener?.onItemClick(list[holder.adapterPosition].infoBean)
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: TodayViewHolder, position: Int) {
-        holder.animateName.text =
-            nameList.find { it.id == animateList[position].nameId }?.name + animateList[position].season
-        holder.episode.text = "第${animateList[position].episode.last().no}集"
+        list[position].run {
+            holder.animateName.text = nameBean.name + " " + infoBean.season
+            holder.episode.text = "第${infoBean.episode.last().no}集"
+        }
     }
 
-    override fun getItemCount() = animateList.size
+    override fun getItemCount() = list.size
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
         this.onItemClickListener = onItemClickListener
     }
 
+    fun setNewData(list: List<InfoWithName>) {
+        this.list = list
+        notifyDataSetChanged()
+    }
 }

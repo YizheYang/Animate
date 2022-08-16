@@ -21,7 +21,7 @@ import com.yyz.animate.utils.EpisodeStateConverter
  * version 1.0
  * update none
  **/
-@Database(entities = [AnimateNameBean::class, AnimateInfoBean::class], version = 2)
+@Database(entities = [AnimateNameBean::class, AnimateInfoBean::class], version = 4)
 @TypeConverters(
     DateConverter::class,
     AnimateStateConverter::class,
@@ -43,6 +43,8 @@ abstract class AnimateDatabase : RoomDatabase() {
                     .databaseBuilder(context.applicationContext, AnimateDatabase::class.java, "animate")
                     .allowMainThreadQueries()
                     .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_2_3)
+                    .addMigrations(MIGRATION_3_4)
                     .build()
             }
             return INSTANCE as AnimateDatabase
@@ -51,6 +53,20 @@ abstract class AnimateDatabase : RoomDatabase() {
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE animate_info ADD COLUMN type integer not null default 1")
+            }
+        }
+
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE animate_name RENAME COLUMN 'id' TO 'name_id'")
+                database.execSQL("ALTER TABLE animate_info RENAME COLUMN 'name_id' TO 'nameId'")
+            }
+        }
+
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE animate_name RENAME COLUMN 'init_time' TO 'name_inittime'")
+                database.execSQL("ALTER TABLE animate_info RENAME COLUMN 'init_time' TO 'info_inittime'")
             }
         }
     }

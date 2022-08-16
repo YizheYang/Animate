@@ -18,13 +18,13 @@ import java.util.*
 data class AnimateInfoBean(
     @PrimaryKey(autoGenerate = true)
     val id: Int?,
-    @ColumnInfo(name = "name_id")
+    @ColumnInfo(name = "nameId")
     val nameId: Int,
     val season: Int,
     val episodes: Int,
     val episode: MutableList<EpisodeState>,
     val state: AnimateState,
-    @ColumnInfo(name = "init_time")
+    @ColumnInfo(name = "info_inittime")
     val initTime: Date,
     val airTime: Date,// 首播时间
     @ColumnInfo(name = "update_day")

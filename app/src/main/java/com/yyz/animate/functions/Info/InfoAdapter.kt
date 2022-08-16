@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.yyz.animate.R
-import com.yyz.animate.entity.EpisodeState
+import com.yyz.animate.entity.AnimateInfoBean
 import kotlinx.android.synthetic.main.item_info.view.*
 
 /**
@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.item_info.view.*
  * version 1.0
  * update none
  **/
-class InfoAdapter(private val list: MutableList<EpisodeState>) : RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
+class InfoAdapter(private var animateInfoBean: AnimateInfoBean) : RecyclerView.Adapter<InfoAdapter.InfoViewHolder>() {
 
     inner class InfoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val episode: TextView = itemView.tv_info_episode
@@ -26,7 +26,7 @@ class InfoAdapter(private val list: MutableList<EpisodeState>) : RecyclerView.Ad
     }
 
     interface OnItemClickListener {
-        fun onItemClick(episodeState: EpisodeState)
+        fun onItemClick(animateInfoBean: AnimateInfoBean, position: Int)
     }
 
     private var onItemClickListener: OnItemClickListener? = null
@@ -35,15 +35,15 @@ class InfoAdapter(private val list: MutableList<EpisodeState>) : RecyclerView.Ad
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_info, parent, false)
         val holder = InfoViewHolder(view)
         holder.itemView.setOnClickListener {
-            onItemClickListener?.onItemClick(list[holder.adapterPosition])
+            onItemClickListener?.onItemClick(animateInfoBean, holder.adapterPosition)
         }
         return holder
     }
 
     override fun onBindViewHolder(holder: InfoViewHolder, position: Int) {
-        holder.episode.text = list[position].no.toString()
+        holder.episode.text = animateInfoBean.episode[position].no.toString()
         holder.cardView.setCardBackgroundColor(
-            if (list[position].already) {
+            if (animateInfoBean.episode[position].already) {
                 Color.GREEN
             } else {
                 Color.WHITE
@@ -51,10 +51,14 @@ class InfoAdapter(private val list: MutableList<EpisodeState>) : RecyclerView.Ad
         )
     }
 
-    override fun getItemCount() = list.size
+    override fun getItemCount() = animateInfoBean.episode.size
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
         this.onItemClickListener = onItemClickListener
     }
 
+    fun setNewData(bean: AnimateInfoBean) {
+        this.animateInfoBean = bean
+        notifyDataSetChanged()
+    }
 }

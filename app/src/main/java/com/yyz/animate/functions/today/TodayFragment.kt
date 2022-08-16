@@ -1,14 +1,12 @@
 package com.yyz.animate.functions.today
 
-import androidx.lifecycle.ViewModelProvider
-import com.yyz.animate.MainViewModel
 import com.yyz.animate.R
 import com.yyz.animate.base.BaseFragment
 import com.yyz.animate.entity.AnimateInfoBean
-import com.yyz.animate.entity.AnimateNameBean
 import com.yyz.animate.entity.EpisodeState
+import com.yyz.animate.entity.InfoWithName
+import com.yyz.animate.utils.DayUtil
 import kotlinx.android.synthetic.main.fragment_today.*
-import java.util.*
 
 /**
  * description none
@@ -26,28 +24,29 @@ class TodayFragment : BaseFragment() {
     override fun getLayoutId() = R.layout.fragment_today
 
     private lateinit var adapter: TodayAdapter
-    private val infoList = mutableListOf<AnimateInfoBean>()
-    private val nameList = mutableListOf<AnimateNameBean>()
-    private lateinit var vm: MainViewModel
 
     override fun initViews() {
-        vm = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        updateData()
-        val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-        ns_today.attachDataSource(
-            listOf(
-                "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新",
-                "周一", "周二", "周三", "周四", "周五", "周六", "周日", "本周未看"
+        db.getAnimateInfoDao().getInfoWithNameList().observe(requireActivity()) {
+            updateData()
+            val list = db.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(DayUtil.getToday())
+            ns_today.attachDataSource(
+                listOf(
+                    "今天有${list.size}部番更新",
+                    "周一", "周二", "周三", "周四", "周五", "周六", "周日",
+                    "本周未看"
+                )
             )
-        )
-
-        infoList.addAll(db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today))
-        nameList.addAll(db.getAnimateNameDao().getAnimateNameBeanList())
-        adapter = TodayAdapter(infoList, nameList)
-        rv_today.adapter = adapter
+            if (!::adapter.isInitialized) {
+                adapter = TodayAdapter(list)
+                rv_today.adapter = adapter
+                setAdapterListener()
+            } else {
+                adapter.setNewData(list)
+            }
+        }
     }
 
-    override fun initListener() {
+    private fun setAdapterListener() {
         adapter.setOnItemClickListener(object : TodayAdapter.OnItemClickListener {
             override fun onItemClick(animateInfoBean: AnimateInfoBean) {
                 animateInfoBean.episode.last().already = true
@@ -55,59 +54,37 @@ class TodayFragment : BaseFragment() {
                 toast("看完了")
             }
         })
+    }
 
-        vm.refresh.observe(requireActivity()) {
-            if (it == true) {
-                updateData()
-                val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-                ns_today.attachDataSource(
-                    listOf(
-                        "今天有${db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today).size}部番更新",
-                        "周一", "周二", "周三", "周四", "周五", "周六", "周日", "本周未看"
-                    )
-                )
-                infoList.clear()
-                infoList.addAll(db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today))
-                adapter.notifyDataSetChanged()
-                vm.refresh.value = false
-            }
-        }
-
+    override fun initListener() {
         ns_today.setOnSpinnerItemSelectedListener { parent, view, position, id ->
-            val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-            infoList.clear()
-            infoList.addAll(
-                if (position == 8) {
-                    val temp = mutableListOf<AnimateInfoBean>()
-                    for (i in 1..today) {
-                        temp.addAll(
-                            db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(i)
-                                .filter { !it.episode.last().already }
-                        )
-                    }
-                    temp
-                } else {
-                    db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(
-                        if (position == 0) {
-                            today
-                        } else {
-                            position
+            val today = DayUtil.getToday()
+            val tempList = mutableListOf<InfoWithName>()
+            tempList.addAll(
+                when (position) {
+                    0 -> db.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(today)
+                    1, 2, 3, 4, 5, 6, 7 -> db.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(position)
+                    8 -> {
+                        val temp = mutableListOf<InfoWithName>()
+                        for (i in 1..today) {
+                            temp.addAll(
+                                db.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(i)
+                                    .filter { !it.infoBean.episode.last().already }
+                            )
                         }
-                    )
+                        temp
+                    }
+                    else -> mutableListOf()
                 }
-
             )
-            adapter.notifyDataSetChanged()
+            adapter.setNewData(tempList)
         }
     }
 
     private fun updateData() {
-        val tempList = db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(
-            (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-        )
+        val tempList = db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(DayUtil.getToday())
         for (temp in tempList) {
-            val weeks =
-                ((Date(System.currentTimeMillis()).time - temp.airTime.time) / (1000 * 60 * 60 * 24 * 7)).toInt()
+            val weeks = DayUtil.getWeeks(temp.airTime)
             while (temp.episode.size <= weeks) {
                 temp.episode.add(EpisodeState(temp.episode.size + 1, false))
                 db.getAnimateInfoDao().updateAnimateInfoBean(temp)

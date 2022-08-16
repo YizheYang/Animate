@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.GridLayoutManager
 import com.yyz.animate.R
@@ -15,6 +13,7 @@ import com.yyz.animate.entity.AnimateNameBean
 import com.yyz.animate.entity.EpisodeState
 import com.yyz.animate.functions.Add.AddActivity
 import com.yyz.animate.utils.DateConverter
+import com.yyz.animate.utils.DayUtil
 import kotlinx.android.synthetic.main.activity_info.*
 
 /**
@@ -41,46 +40,42 @@ class InfoActivity : BaseActivity() {
     override fun getLayoutId() = R.layout.activity_info
 
     private lateinit var adapter: InfoAdapter
-    private lateinit var animateInfoBean: AnimateInfoBean
     private var id = 0
-    private lateinit var launcher: ActivityResultLauncher<Intent>
-    private val list = mutableListOf<EpisodeState>()
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun initViews() {
-        id = intent.getBundleExtra("bundle")?.getInt("id") ?: 0
-        animateInfoBean = db.getAnimateInfoDao().getAnimateInfoBeanFromId(id)!!
-        val animateNameBean = db.getAnimateNameDao().getAnimateNameBeanFormId(animateInfoBean.nameId)!!
-        initInfo(animateInfoBean, animateNameBean)
-        list.addAll(animateInfoBean.episode)
-        adapter = InfoAdapter(list)
-        rv_info.adapter = adapter
-        rv_info.layoutManager = GridLayoutManager(this, 4)
+        id = intent.getBundleExtra("bundle")?.getInt("id") ?: -1
 
-        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                animateInfoBean = db.getAnimateInfoDao().getAnimateInfoBeanFromId(id)!!
-                val animateNameBean = db.getAnimateNameDao().getAnimateNameBeanFormId(animateInfoBean.nameId)!!
-                initInfo(animateInfoBean, animateNameBean)
-                list.clear()
-                list.addAll(animateInfoBean.episode)
-                adapter.notifyDataSetChanged()
+        db.getAnimateInfoDao().getInfoWithNameFromId(id).observe(this) {
+            if (it.infoBean.episode.size <= DayUtil.getWeeks(it.infoBean.airTime)) {
+                updateData(it.infoBean)
+                return@observe
+            }
+            initInfo(it.infoBean, it.nameBean)
+            if (!::adapter.isInitialized) {
+                adapter = InfoAdapter(it.infoBean)
+                rv_info.adapter = adapter
+                rv_info.layoutManager = GridLayoutManager(this, 4)
+                setAdapterListener()
+            } else {
+                adapter.setNewData(it.infoBean)
             }
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
-    override fun initListener() {
+    private fun setAdapterListener() {
         adapter.setOnItemClickListener(object : InfoAdapter.OnItemClickListener {
-            override fun onItemClick(episodeState: EpisodeState) {
-                episodeState.already = !episodeState.already
-                adapter.notifyDataSetChanged()
+            override fun onItemClick(animateInfoBean: AnimateInfoBean, position: Int) {
+                animateInfoBean.episode[position].already = !animateInfoBean.episode[position].already
                 db.getAnimateInfoDao().updateAnimateInfoBean(animateInfoBean)
             }
         })
+    }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    override fun initListener() {
         btn_info_edit.setOnClickListener {
-            AddActivity.edit(this, id, launcher)
+            AddActivity.edit(this, id)
         }
     }
 
@@ -92,5 +87,13 @@ class InfoActivity : BaseActivity() {
         tv_info_name.text = sb.toString()
         tv_info_time.text = DateConverter.converter(animateInfoBean.airTime)
         tv_info_state.text = animateInfoBean.state.state
+    }
+
+    private fun updateData(temp: AnimateInfoBean) {
+        val weeks = DayUtil.getWeeks(temp.airTime)
+        while (temp.episode.size <= weeks) {
+            temp.episode.add(EpisodeState(temp.episode.size + 1, false))
+            db.getAnimateInfoDao().updateAnimateInfoBean(temp)
+        }
     }
 }

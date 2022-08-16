@@ -1,7 +1,9 @@
 package com.yyz.animate.model
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.yyz.animate.entity.AnimateNameBean
+import com.yyz.animate.entity.NameWithInfo
 
 /**
  * description none
@@ -18,7 +20,7 @@ interface AnimateNameDao {
     @Query("SELECT * FROM animate_name")
     fun getAnimateNameBeanList(): List<AnimateNameBean>
 
-    @Query("SELECT * FROM animate_name WHERE id == :id")
+    @Query("SELECT * FROM animate_name WHERE name_id == :id")
     fun getAnimateNameBeanFormId(id: Int): AnimateNameBean?
 
     @Query("SELECT * FROM animate_name WHERE name == :name")
@@ -29,4 +31,8 @@ interface AnimateNameDao {
 
     @Delete
     fun deleteAnimateNameBean(animateNameBean: AnimateNameBean)
+
+    @Transaction
+    @Query("SELECT * FROM animate_name")
+    fun getNameWithInfoList(): LiveData<List<NameWithInfo>>
 }

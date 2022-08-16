@@ -11,6 +11,7 @@ import com.yyz.animate.constants.AnimateType
 import com.yyz.animate.entity.AnimateInfoBean
 import com.yyz.animate.entity.AnimateNameBean
 import com.yyz.animate.entity.EpisodeState
+import com.yyz.animate.utils.DayUtil
 import kotlinx.android.synthetic.main.activity_add.*
 import java.util.*
 
@@ -23,9 +24,6 @@ import java.util.*
  **/
 class AddActivity : BaseActivity() {
     companion object {
-        const val ADD_OK = 1
-        const val EDIT_OK = 2
-
         @JvmStatic
         fun add(context: Context) {
             val intent = Intent(context, AddActivity::class.java)
@@ -55,11 +53,14 @@ class AddActivity : BaseActivity() {
             intent.putExtra("bundle", bundle)
             launcher.launch(intent)
         }
+
+        private const val ADD_MODE = 0
+        private const val EDIT_MODE = 1
     }
 
     override fun getLayoutId() = R.layout.activity_add
 
-    private var mode = 0//0=add,1=edit
+    private var mode = ADD_MODE
 
     override fun initViews() {
         ns_add_type.attachDataSource(listOf(AnimateType.TV, AnimateType.MOVIE, AnimateType.OVA))
@@ -72,10 +73,10 @@ class AddActivity : BaseActivity() {
         )
         val bundle = intent.getBundleExtra("bundle")
         if (bundle != null) {
-            mode = 1
+            mode = EDIT_MODE
         }
-        if (mode == 1) {
-            val animateInfoBean = db.getAnimateInfoDao().getAnimateInfoBeanFromId(bundle!!.getInt("id"))!!
+        if (mode == EDIT_MODE) {
+            val animateInfoBean = db.getAnimateInfoDao().getAnimateInfoBeanFromId(bundle?.getInt("id") ?: -1)!!
             val animateNameBean = db.getAnimateNameDao().getAnimateNameBeanFormId(animateInfoBean.nameId)!!
             et_add_name.setText(animateNameBean.name)
             et_add_name.isEnabled = false
@@ -86,7 +87,7 @@ class AddActivity : BaseActivity() {
             ns_add_state.selectedIndex = animateInfoBean.state.id - 1
             ns_add_type.selectedIndex = animateInfoBean.type.id - 1
             ns_add_type.isEnabled = false
-        } else if (mode == 0) {
+        } else if (mode == ADD_MODE) {
             ns_add_state.selectedIndex = 0
         }
     }
@@ -94,7 +95,7 @@ class AddActivity : BaseActivity() {
     override fun initListener() {
         var date = db.getAnimateInfoDao().getAnimateInfoBeanFromId(
             intent.getBundleExtra("bundle")?.getInt("id") ?: -1
-        )?.initTime ?: Date(0)
+        )?.initTime ?: Date(System.currentTimeMillis())
 
         cv_add_airtime.setOnDateChangeListener { view, year, month, dayOfMonth ->
             val c = Calendar.getInstance()
@@ -158,11 +159,7 @@ class AddActivity : BaseActivity() {
                     },
                     Date(System.currentTimeMillis()),
                     date,
-                    run {
-                        val c = Calendar.getInstance()
-                        c.time = date
-                        return@run (c.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-                    },
+                    DayUtil.getDay(date),
                     when (ns_add_type.selectedIndex) {
                         0 -> AnimateType.TV
                         1 -> AnimateType.MOVIE
@@ -172,9 +169,8 @@ class AddActivity : BaseActivity() {
                 )
                 db.getAnimateInfoDao().insertAnimateInfoBean(tempInfo)
             } else {
-                if (mode == 0) {
+                if (mode == ADD_MODE) {
                     // 找得到名字但是是新增，相当于只有第一季，现在添加第二季
-                    // TODO("这里目前因为在修改模式下屏蔽了季度，所以暂时用不到")
                     val season = et_add_season.text.toString().toInt()
                     val nameId =
                         db.getAnimateNameDao().getAnimateNameBeanFromName(et_add_name.text.toString())?.id ?: -1
@@ -214,11 +210,7 @@ class AddActivity : BaseActivity() {
                         },
                         Date(System.currentTimeMillis()),
                         date,
-                        run {
-                            val c = Calendar.getInstance()
-                            c.time = date
-                            return@run (c.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-                        },
+                        DayUtil.getDay(date),
                         when (ns_add_type.selectedIndex) {
                             0 -> AnimateType.TV
                             1 -> AnimateType.MOVIE
@@ -227,7 +219,7 @@ class AddActivity : BaseActivity() {
                         }
                     )
                     db.getAnimateInfoDao().insertAnimateInfoBean(tempInfo)
-                } else if (mode == 1) {
+                } else if (mode == EDIT_MODE) {
                     // 修改模式
                     val temp = db.getAnimateInfoDao()
                         .getAnimateInfoBeanFromId(intent.getBundleExtra("bundle")?.getInt("id") ?: -1)!!
@@ -266,11 +258,7 @@ class AddActivity : BaseActivity() {
                         },
                         temp.initTime,
                         date,
-                        run {
-                            val c = Calendar.getInstance()
-                            c.time = date
-                            (c.get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
-                        },
+                        DayUtil.getDay(date),
                         when (ns_add_type.selectedIndex) {
                             0 -> AnimateType.TV
                             1 -> AnimateType.MOVIE
