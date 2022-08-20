@@ -91,8 +91,11 @@ class InfoActivity : BaseActivity() {
 
     private fun updateData(temp: AnimateInfoBean) {
         val weeks = DayUtil.getWeeks(temp.airTime)
+        val old = temp.episode.size
         while (temp.episode.size <= weeks) {
             temp.episode.add(EpisodeState(temp.episode.size + 1, false))
+        }
+        if (temp.episode.size != old) {
             db.getAnimateInfoDao().updateAnimateInfoBean(temp)
         }
     }

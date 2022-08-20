@@ -2,6 +2,7 @@ package com.yyz.animate.functions.today
 
 import com.yyz.animate.R
 import com.yyz.animate.base.BaseFragment
+import com.yyz.animate.constants.AnimateState
 import com.yyz.animate.entity.AnimateInfoBean
 import com.yyz.animate.entity.EpisodeState
 import com.yyz.animate.entity.InfoWithName
@@ -33,7 +34,7 @@ class TodayFragment : BaseFragment() {
                 listOf(
                     "今天有${list.size}部番更新",
                     "周一", "周二", "周三", "周四", "周五", "周六", "周日",
-                    "本周未看"
+                    "本周未看", "正在看"
                 )
             )
             if (!::adapter.isInitialized) {
@@ -73,6 +74,9 @@ class TodayFragment : BaseFragment() {
                             )
                         }
                         temp
+                    }
+                    9 -> {
+                        db.getAnimateInfoDao().getInfoWithNameListFromState(AnimateState.WATCHING)
                     }
                     else -> mutableListOf()
                 }

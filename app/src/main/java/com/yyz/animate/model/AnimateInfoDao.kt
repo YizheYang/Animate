@@ -2,6 +2,7 @@ package com.yyz.animate.model
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.yyz.animate.constants.AnimateState
 import com.yyz.animate.constants.Constants
 import com.yyz.animate.entity.AnimateInfoBean
 import com.yyz.animate.entity.InfoWithName
@@ -51,6 +52,14 @@ interface AnimateInfoDao {
                 "and animate_info.update_day = :updateDay"
     )
     fun getInfoWithNameListFromUpdateDay(updateDay: Int): List<InfoWithName>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query(
+        "SELECT * FROM animate_name JOIN animate_info ON (animate_info.nameId = animate_name.name_id)" +
+                "WHERE animate_info.state = :state"
+    )
+    fun getInfoWithNameListFromState(state: AnimateState): List<InfoWithName>
 
     @Update
     fun updateAnimateInfoBean(animateInfoBean: AnimateInfoBean)
