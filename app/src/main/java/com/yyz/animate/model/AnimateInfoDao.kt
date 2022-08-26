@@ -21,16 +21,21 @@ interface AnimateInfoDao {
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
-    @Query("SELECT * FROM animate_info")
-    fun getInfoWithNameList(): LiveData<List<InfoWithName>>
+    @Query("SELECT * FROM animate_name JOIN animate_info ON (animate_info.nameId = animate_name.name_id)")
+    fun getInfoWithNameListLD(): LiveData<List<InfoWithName>>
 
     @Query("SELECT * FROM animate_info WHERE id == :id")
     fun getAnimateInfoBeanFromId(id: Int): AnimateInfoBean?
 
     @RewriteQueriesToDropUnusedColumns
     @Transaction
-    @Query("SELECT * FROM animate_info WHERE id = :id")
-    fun getInfoWithNameFromId(id: Int): LiveData<InfoWithName>
+    @Query("SELECT * FROM animate_name JOIN animate_info ON (animate_info.nameId = animate_name.name_id) WHERE id = :id")
+    fun getInfoWithNameFromIdLD(id: Int): LiveData<InfoWithName>
+
+    @RewriteQueriesToDropUnusedColumns
+    @Transaction
+    @Query("SELECT * FROM animate_name JOIN animate_info ON (animate_info.nameId = animate_name.name_id) WHERE id = :id")
+    fun getInfoWithNameFromId(id: Int): InfoWithName
 
     @Query("SELECT * FROM animate_info WHERE nameId == :nameId")
     fun getAnimateInfoBeanListFromNameId(nameId: Int): List<AnimateInfoBean>

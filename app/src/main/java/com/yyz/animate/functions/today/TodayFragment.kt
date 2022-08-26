@@ -27,7 +27,7 @@ class TodayFragment : BaseFragment() {
     private lateinit var adapter: TodayAdapter
 
     override fun initViews() {
-        db.getAnimateInfoDao().getInfoWithNameList().observe(requireActivity()) {
+        db.getAnimateInfoDao().getInfoWithNameListLD().observe(requireActivity()) {
             updateData()
             val list = db.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(DayUtil.getToday())
             ns_today.attachDataSource(

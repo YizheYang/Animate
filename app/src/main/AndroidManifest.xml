@@ -21,8 +21,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".functions.Add.AddActivity" />
-        <activity android:name=".functions.Info.InfoActivity" />
+        <activity android:name=".functions.add.AddActivity" />
+        <activity android:name=".functions.info.InfoActivity" />
 
         <receiver
             android:name=".functions.widget.AnimateWidgetProvider"

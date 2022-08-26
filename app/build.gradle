@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk rootProject.ext.android["compileSdk"]
 
     defaultConfig {
-        applicationId "com.yyz.animate"
-        minSdk 21
-        targetSdk 30
-        versionCode 1
-        versionName "1.0"
+        applicationId rootProject.ext.android["applicationId"]
+        minSdk rootProject.ext.android["minSdk"]
+        targetSdk rootProject.ext.android["targetSdk"]
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -37,22 +37,27 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
 
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation "androidx.room:room-runtime:2.4.0"
-    annotationProcessor "androidx.room:room-compiler:2.4.0"
-    kapt "androidx.room:room-compiler:2.3.0"
-    implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'com.github.arcadefire:nice-spinner:1.4.5'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
+    implementation rootProject.ext.depsLibs["core"]
+    implementation rootProject.ext.depsLibs["appcompat"]
+    implementation rootProject.ext.depsLibs["fragment"]
+    implementation rootProject.ext.depsLibs["lifecycle"]
+    implementation rootProject.ext.depsLibs["material"]
+    implementation rootProject.ext.depsLibs["constraintlayout"]
+    testImplementation rootProject.ext.depsLibs["junit"]
+    androidTestImplementation rootProject.ext.depsLibs["test.ext"]
+    androidTestImplementation rootProject.ext.depsLibs["test.espresso"]
+    implementation rootProject.ext.depsLibs["room-runtime"]
+    annotationProcessor rootProject.ext.depsLibs["room-compiler"]
+    kapt rootProject.ext.depsLibs["room-compiler"]
+    implementation rootProject.ext.depsLibs["gson"]
+    implementation rootProject.ext.depsLibs["nice-spinner"]
+    implementation rootProject.ext.depsLibs["rxjava"]
+    implementation rootProject.ext.depsLibs["rxAndroid"]
 }

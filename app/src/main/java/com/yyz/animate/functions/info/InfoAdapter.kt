@@ -1,4 +1,4 @@
-package com.yyz.animate.functions.Info
+package com.yyz.animate.functions.info
 
 import android.graphics.Color
 import android.view.LayoutInflater

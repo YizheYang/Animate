@@ -4,8 +4,8 @@ import android.app.AlertDialog
 import android.view.View
 import com.yyz.animate.R
 import com.yyz.animate.base.BaseFragment
-import com.yyz.animate.functions.Add.AddActivity
-import com.yyz.animate.functions.Info.InfoActivity
+import com.yyz.animate.functions.add.AddActivity
+import com.yyz.animate.functions.info.InfoActivity
 import kotlinx.android.synthetic.main.fragment_list.*
 
 /**
@@ -26,7 +26,7 @@ class ListFragment : BaseFragment() {
     private lateinit var nameAdapter: AnimateNameAdapter
 
     override fun initViews() {
-        db.getAnimateNameDao().getNameWithInfoList().observe(requireActivity()) {
+        db.getAnimateNameDao().getNameWithInfoListLD().observe(requireActivity()) {
             if (!::nameAdapter.isInitialized) {
                 nameAdapter = AnimateNameAdapter(it)
                 rv_list.adapter = nameAdapter

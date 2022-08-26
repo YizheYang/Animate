@@ -1,4 +1,4 @@
-package com.yyz.animate.functions.Add
+package com.yyz.animate.functions.add
 
 import android.content.Context
 import android.content.Intent
