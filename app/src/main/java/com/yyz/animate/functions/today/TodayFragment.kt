@@ -50,7 +50,7 @@ class TodayFragment : BaseFragment() {
     private fun setAdapterListener() {
         adapter.setOnItemClickListener(object : TodayAdapter.OnItemClickListener {
             override fun onItemClick(animateInfoBean: AnimateInfoBean) {
-                animateInfoBean.episode.last().already = true
+                animateInfoBean.episodeList.last().already = true
                 db.getAnimateInfoDao().updateAnimateInfoBean(animateInfoBean)
                 toast("看完了")
             }
@@ -70,7 +70,7 @@ class TodayFragment : BaseFragment() {
                         for (i in 1..today) {
                             temp.addAll(
                                 db.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(i)
-                                    .filter { !it.infoBean.episode.last().already }
+                                    .filter { !it.infoBean.episodeList.last().already }
                             )
                         }
                         temp
@@ -89,8 +89,8 @@ class TodayFragment : BaseFragment() {
         val tempList = db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(DayUtil.getToday())
         for (temp in tempList) {
             val weeks = DayUtil.getWeeks(temp.airTime)
-            while (temp.episode.size <= weeks) {
-                temp.episode.add(EpisodeState(temp.episode.size + 1, false))
+            while (temp.episodeList.size <= weeks) {
+                temp.episodeList.add(EpisodeState(temp.episodeList.size + 1, false))
                 db.getAnimateInfoDao().updateAnimateInfoBean(temp)
             }
         }

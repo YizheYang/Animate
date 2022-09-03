@@ -35,4 +35,8 @@ interface AnimateNameDao {
     @Transaction
     @Query("SELECT * FROM animate_name")
     fun getNameWithInfoListLD(): LiveData<List<NameWithInfo>>
+
+    @Transaction
+    @Query("SELECT * FROM animate_name WHERE name_id = :id")
+    fun getNameWithInfoFromId(id: Int): NameWithInfo
 }

@@ -1,7 +1,7 @@
 package com.yyz.animate.functions.info
 
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.GridLayoutManager
@@ -11,7 +11,6 @@ import com.yyz.animate.entity.EpisodeState
 import com.yyz.animate.entity.InfoWithName
 import com.yyz.animate.functions.add.AddActivity
 import com.yyz.animate.model.AnimateDatabase
-import com.yyz.animate.utils.DateConverter
 import com.yyz.animate.utils.DayUtil
 
 /**
@@ -31,12 +30,12 @@ class InfoViewModel(private val context: AppCompatActivity, id: Int) : ViewModel
     val date = MutableLiveData<String>("null")
     val state = MutableLiveData<String>("null")
 
-    fun onClick() {
+    fun onClick(view: View) {
         AddActivity.edit(context, beanLD.value?.infoBean?.id ?: throw NullPointerException())
     }
 
     fun observeBean(it: InfoWithName, rv: RecyclerView) {
-        if (it.infoBean.episode.size <= DayUtil.getWeeks(it.infoBean.airTime)) {
+        if (it.infoBean.episodeList.size <= DayUtil.getWeeks(it.infoBean.airTime)) {
             updateData(it.infoBean)
             return
         }
@@ -53,7 +52,7 @@ class InfoViewModel(private val context: AppCompatActivity, id: Int) : ViewModel
     private fun setAdapterListener() {
         adapter.setOnItemClickListener(object : InfoAdapter.OnItemClickListener {
             override fun onItemClick(animateInfoBean: AnimateInfoBean, position: Int) {
-                animateInfoBean.episode[position].already = !animateInfoBean.episode[position].already
+                animateInfoBean.episodeList[position].already = !animateInfoBean.episodeList[position].already
                 db.getAnimateInfoDao().updateAnimateInfoBean(animateInfoBean)
             }
         })
@@ -61,11 +60,11 @@ class InfoViewModel(private val context: AppCompatActivity, id: Int) : ViewModel
 
     private fun updateData(temp: AnimateInfoBean) {
         val weeks = DayUtil.getWeeks(temp.airTime)
-        val old = temp.episode.size
-        while (temp.episode.size <= weeks) {
-            temp.episode.add(EpisodeState(temp.episode.size + 1, false))
+        val old = temp.episodeList.size
+        while (temp.episodeList.size <= weeks) {
+            temp.episodeList.add(EpisodeState(temp.episodeList.size + 1, false))
         }
-        if (temp.episode.size != old) {
+        if (temp.episodeList.size != old) {
             db.getAnimateInfoDao().updateAnimateInfoBean(temp)
         }
     }

@@ -41,9 +41,9 @@ class InfoAdapter(private var animateInfoBean: AnimateInfoBean) : RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: InfoViewHolder, position: Int) {
-        holder.episode.text = animateInfoBean.episode[position].no.toString()
+        holder.episode.text = animateInfoBean.episodeList[position].no.toString()
         holder.cardView.setCardBackgroundColor(
-            if (animateInfoBean.episode[position].already) {
+            if (animateInfoBean.episodeList[position].already) {
                 Color.GREEN
             } else {
                 Color.WHITE
@@ -51,7 +51,7 @@ class InfoAdapter(private var animateInfoBean: AnimateInfoBean) : RecyclerView.A
         )
     }
 
-    override fun getItemCount() = animateInfoBean.episode.size
+    override fun getItemCount() = animateInfoBean.episodeList.size
 
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener) {
         this.onItemClickListener = onItemClickListener

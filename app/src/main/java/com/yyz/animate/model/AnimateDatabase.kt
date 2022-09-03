@@ -21,7 +21,7 @@ import com.yyz.animate.utils.EpisodeStateConverter
  * version 1.0
  * update none
  **/
-@Database(entities = [AnimateNameBean::class, AnimateInfoBean::class], version = 4)
+@Database(entities = [AnimateNameBean::class, AnimateInfoBean::class], version = 5)
 @TypeConverters(
     DateConverter::class,
     AnimateStateConverter::class,
@@ -45,6 +45,7 @@ abstract class AnimateDatabase : RoomDatabase() {
                     .addMigrations(MIGRATION_1_2)
                     .addMigrations(MIGRATION_2_3)
                     .addMigrations(MIGRATION_3_4)
+                    .addMigrations(MIGRATION_4_5)
                     .build()
             }
             return INSTANCE as AnimateDatabase
@@ -67,6 +68,12 @@ abstract class AnimateDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE animate_name RENAME COLUMN 'init_time' TO 'name_inittime'")
                 database.execSQL("ALTER TABLE animate_info RENAME COLUMN 'init_time' TO 'info_inittime'")
+            }
+        }
+
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE animate_info RENAME COLUMN 'episode' TO 'episodeList'")
             }
         }
     }

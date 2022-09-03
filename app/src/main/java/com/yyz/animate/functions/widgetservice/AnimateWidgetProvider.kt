@@ -1,4 +1,4 @@
-package com.yyz.animate.functions.widget
+package com.yyz.animate.functions.widgetservice
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider

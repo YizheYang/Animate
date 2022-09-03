@@ -25,7 +25,7 @@
         <activity android:name=".functions.info.InfoActivity" />
 
         <receiver
-            android:name=".functions.widget.AnimateWidgetProvider"
+            android:name=".functions.widgetservice.AnimateWidgetProvider"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

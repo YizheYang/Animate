@@ -1,4 +1,4 @@
-package com.yyz.animate.functions.widget
+package com.yyz.animate.functions.widgetservice
 
 import android.content.Context
 import android.content.Intent
@@ -36,7 +36,7 @@ class AnimateWidgetService() : RemoteViewsService() {
             val today = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7 + 1
             val temp = db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(today)
             list.clear()
-            list.addAll(temp.filter { !it.episode.run { this[lastIndex].already } })
+            list.addAll(temp.filter { !it.episodeList.run { this[lastIndex].already } })
         }
 
         override fun onDestroy() {

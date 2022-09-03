@@ -33,10 +33,9 @@ class InfoActivity : BaseActivity2() {
 
 //    override fun getLayoutId() = R.layout.activity_info
 
-    private var id = 0
     private lateinit var vm: InfoViewModel
 
-//    private val vm by viewModels<InfoViewModel> {
+    //    private val vm by viewModels<InfoViewModel> {
 //        InfoViewModelFactory(
 //            this,
 //            AnimateDatabase.getInstance(this).getAnimateInfoDao().getInfoWithNameFromId(
@@ -47,16 +46,18 @@ class InfoActivity : BaseActivity2() {
     private lateinit var binding: ActivityInfoBinding
 
     override fun initViews() {
-        id = intent.getBundleExtra("bundle")?.getInt("id") ?: throw NullPointerException()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_info)
         binding.lifecycleOwner = this
-        vm = ViewModelProvider(this, InfoViewModelFactory(this, id))[InfoViewModel::class.java]
+        vm = ViewModelProvider(
+            this,
+            InfoViewModelFactory(this, intent.getBundleExtra("bundle")?.getInt("id") ?: throw NullPointerException())
+        )[InfoViewModel::class.java]
         binding.vm = vm
     }
 
     override fun initListener() {
         vm.beanLD.observe(this) {
-            vm.name.value = it.nameBean.name
+            vm.name.value = it.nameBean.name + it.infoBean.type.type + it.infoBean.season
             vm.date.value = DateConverter.converter(it.infoBean.airTime)
             vm.state.value = it.infoBean.state.state
             vm.observeBean(it, binding.rvInfo)

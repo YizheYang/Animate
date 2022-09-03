@@ -1,93 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditText
-        android:id="@+id/et_add_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
-        android:hint="@string/name"
-        android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.05" />
+    <data>
 
-    <EditText
-        android:id="@+id/et_add_season"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:hint="@string/season"
-        android:inputType="number"
-        app:layout_constraintEnd_toStartOf="@+id/ns_add_type"
-        app:layout_constraintStart_toStartOf="@+id/et_add_name"
-        app:layout_constraintTop_toBottomOf="@+id/et_add_name" />
+        <variable
+            name="vm"
+            type="com.yyz.animate.functions.add.AddViewModel" />
+    </data>
 
-    <org.angmarch.views.NiceSpinner
-        android:id="@+id/ns_add_type"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/type"
-        app:layout_constraintBottom_toBottomOf="@+id/et_add_season"
-        app:layout_constraintEnd_toEndOf="@+id/et_add_name"
-        app:layout_constraintStart_toEndOf="@+id/et_add_season"
-        app:layout_constraintTop_toTopOf="@+id/et_add_season" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/et_add_episodes"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:hint="@string/episodes"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="@+id/et_add_name"
-        app:layout_constraintStart_toStartOf="@+id/et_add_name"
-        app:layout_constraintTop_toBottomOf="@+id/et_add_season" />
+        <EditText
+            android:id="@+id/et_add_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:enabled="@{vm.nameEnable}"
+            android:hint="@string/name"
+            android:inputType="text"
+            android:text="@={vm.name}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.05" />
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/linearLayoutCompat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="@+id/et_add_name"
-        app:layout_constraintStart_toStartOf="@+id/et_add_name"
-        app:layout_constraintTop_toBottomOf="@+id/et_add_episodes">
+        <EditText
+            android:id="@+id/et_add_season"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:enabled="@{vm.seasonEnable}"
+            android:hint="@string/season"
+            android:inputType="number"
+            android:text="@={vm.season}"
+            app:layout_constraintEnd_toStartOf="@+id/ns_add_type"
+            app:layout_constraintStart_toStartOf="@+id/et_add_name"
+            app:layout_constraintTop_toBottomOf="@+id/et_add_name" />
 
-        <TextView
+        <org.angmarch.views.NiceSpinner
+            android:id="@+id/ns_add_type"
+            selectedIndex="@={vm.type}"
+            selectedIndexChanged="@{vm::onSpinnerItemSelected}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:enabled="@{vm.typeEnable}"
+            android:hint="@string/type"
+            app:layout_constraintBottom_toBottomOf="@+id/et_add_season"
+            app:layout_constraintEnd_toEndOf="@+id/et_add_name"
+            app:layout_constraintStart_toEndOf="@+id/et_add_season"
+            app:layout_constraintTop_toTopOf="@+id/et_add_season" />
+
+        <EditText
+            android:id="@+id/et_add_episodes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:enabled="@{vm.episodeEnable}"
+            android:hint="@string/episodes"
+            android:inputType="number"
+            android:text="@={vm.episode}"
+            app:layout_constraintEnd_toEndOf="@+id/et_add_name"
+            app:layout_constraintStart_toStartOf="@+id/et_add_name"
+            app:layout_constraintTop_toBottomOf="@+id/et_add_season" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayoutCompat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/airtime"
-            android:textSize="20sp" />
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="@+id/et_add_name"
+            app:layout_constraintStart_toStartOf="@+id/et_add_name"
+            app:layout_constraintTop_toBottomOf="@+id/et_add_episodes">
 
-        <CalendarView
-            android:id="@+id/cv_add_airtime"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/airtime"
+                android:textSize="20sp" />
+
+            <CalendarView
+                android:id="@+id/cv_add_airtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:date="@={vm.date}"
+                android:onSelectedDayChange="@{vm::onDateChange}" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <org.angmarch.views.NiceSpinner
+            android:id="@+id/ns_add_state"
+            selectedIndex="@={vm.state}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/state"
+            app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
+            app:layout_constraintStart_toStartOf="@+id/et_add_episodes"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat" />
+
+        <Button
+            android:id="@+id/btn_add_confirm"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <org.angmarch.views.NiceSpinner
-        android:id="@+id/ns_add_state"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/state"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayoutCompat"
-        app:layout_constraintStart_toStartOf="@+id/et_add_episodes"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutCompat" />
-
-    <Button
-        android:id="@+id/btn_add_confirm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/confirm"
-        app:layout_constraintEnd_toEndOf="@+id/ns_add_state"
-        app:layout_constraintStart_toStartOf="@+id/ns_add_state"
-        app:layout_constraintTop_toBottomOf="@+id/ns_add_state" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:onClick="@{vm::onClick}"
+            android:text="@string/confirm"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/ns_add_state"
+            app:layout_constraintStart_toStartOf="@+id/ns_add_state"
+            app:layout_constraintTop_toBottomOf="@+id/ns_add_state" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
