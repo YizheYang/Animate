@@ -3,6 +3,11 @@ package com.yyz.animate.functions.add
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.Gravity
+import android.widget.ArrayAdapter
+import android.widget.ListPopupWindow
 import androidx.activity.result.ActivityResultLauncher
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -57,6 +62,7 @@ class AddActivity : BaseActivity2() {
 
     private lateinit var vm: AddViewModel
     private lateinit var binding: ActivityAddBinding
+    private var listPopupWindow: ListPopupWindow? = null
 
     override fun initViews() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add)
@@ -72,5 +78,53 @@ class AddActivity : BaseActivity2() {
         binding.nsAddState.attachDataSource(vm.stateList)
     }
 
-    override fun initListener() {}
+    override fun initListener() {
+        var old = listOf<String>()
+        binding.etAddName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//                listPopupWindow?.dismiss()
+//                listPopupWindow = null
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString() == "") {
+                    listPopupWindow?.dismiss()
+                    listPopupWindow = null
+                }
+                val tempList =
+                    vm.nameBeanList.map { it.name }.filter { s.toString() != "" && it.contains(s.toString()) }
+                if (old == tempList) {
+                    return
+                }
+                if (listPopupWindow != null) {
+                    listPopupWindow?.dismiss()
+                    listPopupWindow = null
+                }
+                old = tempList
+                listPopupWindow = ListPopupWindow(this@AddActivity)
+                listPopupWindow?.run {
+                    setAdapter(
+                        ArrayAdapter(
+                            this@AddActivity,
+                            R.layout.item_add_namelist,
+                            tempList
+                        )
+                    )
+                    setDropDownGravity(Gravity.CENTER)
+                    anchorView = binding.etAddName
+                    setOnItemClickListener { parent, view, position, id ->
+                        vm.chooseNameBean = vm.nameBeanList.filter { it.name == tempList[position] }[0]
+                        dismiss()
+                        listPopupWindow = null
+                    }
+                    show()
+                }
+            }
+
+        })
+    }
 }

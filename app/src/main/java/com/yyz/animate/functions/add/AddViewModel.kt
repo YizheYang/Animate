@@ -48,6 +48,9 @@ class AddViewModel(private val context: AppCompatActivity, val id: Int) : ViewMo
     private val tempStateList = listOf(AnimateState.WILL, AnimateState.WATCHING, AnimateState.ALREADY)
     val stateList = tempStateList.map { it.state }
 
+    val nameBeanList: MutableList<AnimateNameBean> = mutableListOf()
+    var chooseNameBean: AnimateNameBean? = null
+
     init {
         mode = if (id == -1) {
             AddActivity.ADD_MODE
@@ -58,7 +61,7 @@ class AddViewModel(private val context: AppCompatActivity, val id: Int) : ViewMo
             val bean = db.getAnimateInfoDao().getInfoWithNameFromId(id)
             name.value = bean.nameBean.name
             season.value = bean.infoBean.season.toString()
-            episode.value = bean.infoBean.episodes.toString()
+            episode.value = bean.infoBean.episodeList.size.toString()
             date.value = bean.infoBean.airTime.time
             state.value = bean.infoBean.state.id - 1
             type.value = bean.infoBean.type.id - 1
@@ -69,6 +72,8 @@ class AddViewModel(private val context: AppCompatActivity, val id: Int) : ViewMo
             if (type.value == AnimateType.MOVIE.id - 1) {
                 episodeEnable.value = false
             }
+        } else if (mode == AddActivity.ADD_MODE) {
+            nameBeanList.addAll(db.getAnimateNameDao().getAnimateNameBeanList())
         }
     }
 
@@ -83,8 +88,9 @@ class AddViewModel(private val context: AppCompatActivity, val id: Int) : ViewMo
         when (mode) {
             AddActivity.ADD_MODE -> {
                 val nameBean =
-                    db.getAnimateNameDao().getAnimateNameBeanFromName(name.value ?: throw IllegalArgumentException())
-                        ?: initNewNameBean()
+                    chooseNameBean ?: db.getAnimateNameDao()
+                        .getAnimateNameBeanFromName(name.value ?: throw IllegalArgumentException())
+                    ?: initNewNameBean()
                 if (!initNewInfoBean(nameBean)) {
                     return
                 }

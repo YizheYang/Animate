@@ -60,11 +60,12 @@ class InfoViewModel(private val context: AppCompatActivity, id: Int) : ViewModel
 
     private fun updateData(temp: AnimateInfoBean) {
         val weeks = DayUtil.getWeeks(temp.airTime)
-        val old = temp.episodeList.size
+        var flag = false
         while (temp.episodeList.size <= weeks) {
             temp.episodeList.add(EpisodeState(temp.episodeList.size + 1, false))
+            flag = true
         }
-        if (temp.episodeList.size != old) {
+        if (flag) {
             db.getAnimateInfoDao().updateAnimateInfoBean(temp)
         }
     }
