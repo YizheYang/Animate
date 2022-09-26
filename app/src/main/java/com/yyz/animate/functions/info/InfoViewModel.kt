@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.yyz.animate.constants.AnimateState
+import com.yyz.animate.constants.AnimateType
 import com.yyz.animate.entity.AnimateInfoBean
 import com.yyz.animate.entity.EpisodeState
 import com.yyz.animate.entity.InfoWithName
@@ -35,7 +37,12 @@ class InfoViewModel(private val context: AppCompatActivity, id: Int) : ViewModel
     }
 
     fun observeBean(it: InfoWithName, rv: RecyclerView) {
-        if (it.infoBean.episodeList.size <= DayUtil.getWeeks(it.infoBean.airTime)) {
+        if (it.infoBean.type == AnimateType.TV
+            && it.infoBean.state == AnimateState.WATCHING
+            && it.infoBean.episodeList.size <= DayUtil.getWeeks(
+                it.infoBean.airTime
+            )
+        ) {
             updateData(it.infoBean)
             return
         }
