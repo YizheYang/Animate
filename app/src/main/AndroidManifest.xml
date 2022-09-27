@@ -26,14 +26,21 @@
 
         <receiver
             android:name=".functions.widgetservice.AnimateWidgetProvider"
+            android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.yyz.animate.ITEM_ACTION"/>
+                <action android:name="com.yyz.animate.REFRESH_ACTION"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+
+        <service
+            android:name=".functions.widgetservice.AnimateWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

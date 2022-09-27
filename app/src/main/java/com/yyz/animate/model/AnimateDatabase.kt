@@ -51,6 +51,13 @@ abstract class AnimateDatabase : RoomDatabase() {
             return INSTANCE as AnimateDatabase
         }
 
+        fun close() {
+            if (INSTANCE != null && INSTANCE?.isOpen == true) {
+                INSTANCE?.close()
+                INSTANCE = null
+            }
+        }
+
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE animate_info ADD COLUMN type integer not null default 1")

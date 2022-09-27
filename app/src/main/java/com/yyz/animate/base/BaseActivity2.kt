@@ -7,7 +7,6 @@ import android.view.View
 import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import com.yyz.animate.R
 import com.yyz.animate.model.AnimateDatabase
 
@@ -51,4 +50,8 @@ abstract class BaseActivity2 : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        AnimateDatabase.close()
+    }
 }

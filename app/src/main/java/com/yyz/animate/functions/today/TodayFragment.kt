@@ -1,11 +1,15 @@
 package com.yyz.animate.functions.today
 
+import android.content.Intent
+import android.util.Log
 import com.yyz.animate.R
 import com.yyz.animate.base.BaseFragment
 import com.yyz.animate.constants.AnimateState
+import com.yyz.animate.constants.TAG
 import com.yyz.animate.entity.AnimateInfoBean
 import com.yyz.animate.entity.EpisodeState
 import com.yyz.animate.entity.InfoWithName
+import com.yyz.animate.functions.widgetservice.AnimateWidgetProvider
 import com.yyz.animate.utils.DayUtil
 import kotlinx.android.synthetic.main.fragment_today.*
 
@@ -28,7 +32,10 @@ class TodayFragment : BaseFragment() {
 
     override fun initViews() {
         db.getAnimateInfoDao().getInfoWithNameListLD().observe(requireActivity()) {
-            updateData()
+            if (updateData()) {
+                return@observe
+            }
+            sendRefreshBroadcast()
             val list = db.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(DayUtil.getToday())
             ns_today.attachDataSource(
                 listOf(
@@ -85,16 +92,26 @@ class TodayFragment : BaseFragment() {
         }
     }
 
-    private fun updateData() {
+    private fun updateData(): Boolean {
+        var change = false
         val tempList = db.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(DayUtil.getToday())
         for (temp in tempList) {
             val weeks = DayUtil.getWeeks(temp.airTime)
             while (temp.episodeList.size <= weeks) {
                 temp.episodeList.add(EpisodeState(temp.episodeList.size + 1, false))
                 db.getAnimateInfoDao().updateAnimateInfoBean(temp)
+                change = true
             }
         }
+        return change
+    }
 
+    private fun sendRefreshBroadcast() {
+        val intent = Intent(AnimateWidgetProvider.REFRESH_ACTION)
+        intent.`package` = requireActivity().packageName
+        intent.putExtra("type", AnimateWidgetProvider.TYPE_AUTO)
+        requireActivity().sendBroadcast(intent)
+        Log.d(TAG, "sendRefreshBroadcast: -----------------")
     }
 
 }
