@@ -12,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.yyz.animate.base.BaseActivity
 import com.yyz.animate.functions.list.ListFragment
 import com.yyz.animate.functions.today.TodayFragment
+import com.yyz.animate.model.AnimateDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
@@ -59,6 +60,11 @@ class MainActivity : BaseActivity() {
             return true
         }
         return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        AnimateDatabase.close()
     }
 
     inner class MainFragmentAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {

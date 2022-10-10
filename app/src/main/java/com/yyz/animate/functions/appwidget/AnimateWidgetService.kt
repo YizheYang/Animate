@@ -1,4 +1,4 @@
-package com.yyz.animate.functions.widgetservice
+package com.yyz.animate.functions.appwidget
 
 import android.content.Intent
 import android.widget.RemoteViewsService

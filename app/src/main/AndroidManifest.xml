@@ -25,7 +25,7 @@
         <activity android:name=".functions.info.InfoActivity" />
 
         <receiver
-            android:name=".functions.widgetservice.AnimateWidgetProvider"
+            android:name=".functions.appwidget.AnimateWidgetProvider"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -39,7 +39,7 @@
         </receiver>
 
         <service
-            android:name=".functions.widgetservice.AnimateWidgetService"
+            android:name=".functions.appwidget.AnimateWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 

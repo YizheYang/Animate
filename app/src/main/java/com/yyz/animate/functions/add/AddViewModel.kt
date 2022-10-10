@@ -87,10 +87,9 @@ class AddViewModel(private val context: AppCompatActivity, val id: Int) : ViewMo
         }
         when (mode) {
             AddActivity.ADD_MODE -> {
-                val nameBean =
-                    chooseNameBean ?: db.getAnimateNameDao()
-                        .getAnimateNameBeanFromName(name.value ?: throw IllegalArgumentException())
-                    ?: initNewNameBean()
+                val nameBean = chooseNameBean ?: db.getAnimateNameDao().getAnimateNameBeanFromName(
+                    name.value ?: throw IllegalArgumentException()
+                ) ?: initNewNameBean()
                 if (!initNewInfoBean(nameBean)) {
                     return
                 }
@@ -101,7 +100,7 @@ class AddViewModel(private val context: AppCompatActivity, val id: Int) : ViewMo
             }
         }
         Toast.makeText(context, "编辑完毕", Toast.LENGTH_SHORT).show()
-        context.setResult(AppCompatActivity.RESULT_OK)
+//        context.setResult(AppCompatActivity.RESULT_OK)
         context.finish()
     }
 

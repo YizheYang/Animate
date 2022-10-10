@@ -50,8 +50,4 @@ abstract class BaseActivity2 : AppCompatActivity() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        AnimateDatabase.close()
-    }
 }

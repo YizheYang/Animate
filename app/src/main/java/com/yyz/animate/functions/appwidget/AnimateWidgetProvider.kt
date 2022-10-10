@@ -1,4 +1,4 @@
-package com.yyz.animate.functions.widgetservice
+package com.yyz.animate.functions.appwidget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -30,6 +30,8 @@ class AnimateWidgetProvider : AppWidgetProvider() {
 
         const val TYPE_CLICK = 0
         const val TYPE_AUTO = 1
+
+        const val RANDOM = 101010
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
@@ -37,10 +39,12 @@ class AnimateWidgetProvider : AppWidgetProvider() {
         for (id in appWidgetIds) {
             val views = RemoteViews(context.packageName, R.layout.widget)
 
-            setTitleClick(context, views)
+            setTitleClick(context, views, id)
 
             // 设置listView的adapter
             val serviceIntent = Intent(context, AnimateWidgetService::class.java)
+            serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+//            serviceIntent.setData(Uri.fromParts("content", (id + RANDOM).toString(), null))
             views.setRemoteAdapter(R.id.lv_widget, serviceIntent)
 
             setListClick(context, views, id)
@@ -53,14 +57,14 @@ class AnimateWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         val manager = AppWidgetManager.getInstance(context)
-        for (id in manager.getAppWidgetIds(ComponentName(context, AnimateWidgetProvider::class.java))) {
-            val views = RemoteViews(context.packageName, R.layout.widget)
-            // 多次绑定，据说能解决偶尔点击事件失效的问题
-            setTitleClick(context, views)
-            setListClick(context, views, id)
-            manager.updateAppWidget(id, views)
-        }
         val appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+        val views = RemoteViews(context.packageName, R.layout.widget)
+//        for (id in manager.getAppWidgetIds(ComponentName(context, AnimateWidgetProvider::class.java))) {
+//            // 多次绑定，据说能解决偶尔点击事件失效的问题
+//            setTitleClick(context, views, id)
+//            setListClick(context, views, id)
+//            manager.updateAppWidget(id, views)
+//        }
         when (action) {
             REFRESH_ACTION -> {
                 Log.d(TAG, "onReceive: ----------------------------------REFRESH_ACTION")
@@ -70,6 +74,7 @@ class AnimateWidgetProvider : AppWidgetProvider() {
                     }
                 }
                 val componentName = ComponentName(context, AnimateWidgetProvider::class.java)
+                manager.updateAppWidget(manager.getAppWidgetIds(componentName), views)
                 manager.notifyAppWidgetViewDataChanged(manager.getAppWidgetIds(componentName), R.id.lv_widget)
             }
             ITEM_ACTION -> {
@@ -81,14 +86,16 @@ class AnimateWidgetProvider : AppWidgetProvider() {
         super.onReceive(context, intent)
     }
 
-    private fun setTitleClick(context: Context, views: RemoteViews) {
+    private fun setTitleClick(context: Context, views: RemoteViews, id: Int) {
         // 设置标题的点击事件
-        val titleIntent = Intent()
+        // intent初始化的时候不能直接Intent()，里面不能为空，否则就会出现程序被杀后，点击事件失效
+        val titleIntent = Intent(context, AnimateWidgetProvider::class.java)
         titleIntent.action = REFRESH_ACTION
         titleIntent.putExtra("type", TYPE_CLICK)
+        titleIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
         // 坑：安卓8后不允许隐式广播，需要添加包名变为显式
         titleIntent.`package` = context.packageName
-        val rePendingIntent = PendingIntent.getBroadcast(context, 0, titleIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val rePendingIntent = PendingIntent.getBroadcast(context, 0, titleIntent, PendingIntent.FLAG_CANCEL_CURRENT)
         views.setOnClickPendingIntent(R.id.tv_widget, rePendingIntent)
     }
 
@@ -99,11 +106,11 @@ class AnimateWidgetProvider : AppWidgetProvider() {
         //     它们不能像普通的按钮一样通过 setOnClickPendingIntent 设置点击事件，必须先通过两步。
         //        (01) 通过 setPendingIntentTemplate 设置 “intent模板”，这是比不可少的！
         //        (02) 然后在处理该“集合控件”的RemoteViewsFactory类的getViewAt()接口中 通过 setOnClickFillInIntent 设置“集合控件的某一项的数据”
-        val listIntent = Intent()
+        val listIntent = Intent(context, AnimateWidgetProvider::class.java)
         listIntent.action = ITEM_ACTION
         listIntent.`package` = context.packageName
         listIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-        val pendingIntent = PendingIntent.getBroadcast(context, 0, listIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getBroadcast(context, 0, listIntent, PendingIntent.FLAG_CANCEL_CURRENT)
         views.setPendingIntentTemplate(R.id.lv_widget, pendingIntent)
     }
 }

@@ -43,7 +43,15 @@ class TodayAdapter(private var list: List<InfoWithName>) :
     override fun onBindViewHolder(holder: TodayViewHolder, position: Int) {
         list[position].run {
             holder.animateName.text = nameBean.name + " " + infoBean.season
-            holder.episode.text = "第${infoBean.episodeList.last().no}集"
+            holder.episode.text = "第${
+                infoBean.episodeList.run {
+                    if (this.isEmpty()) {
+                        "0"
+                    } else {
+                        last().no
+                    }
+                }
+            }集"
         }
     }
 

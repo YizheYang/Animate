@@ -1,5 +1,7 @@
 package com.yyz.animate.functions.today
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import android.util.Log
 import com.yyz.animate.R
@@ -9,7 +11,7 @@ import com.yyz.animate.constants.TAG
 import com.yyz.animate.entity.AnimateInfoBean
 import com.yyz.animate.entity.EpisodeState
 import com.yyz.animate.entity.InfoWithName
-import com.yyz.animate.functions.widgetservice.AnimateWidgetProvider
+import com.yyz.animate.functions.appwidget.AnimateWidgetProvider
 import com.yyz.animate.utils.DayUtil
 import kotlinx.android.synthetic.main.fragment_today.*
 
@@ -57,9 +59,13 @@ class TodayFragment : BaseFragment() {
     private fun setAdapterListener() {
         adapter.setOnItemClickListener(object : TodayAdapter.OnItemClickListener {
             override fun onItemClick(animateInfoBean: AnimateInfoBean) {
-                animateInfoBean.episodeList.last().already = true
-                db.getAnimateInfoDao().updateAnimateInfoBean(animateInfoBean)
-                toast("看完了")
+                animateInfoBean.episodeList.run {
+                    if (this.isNotEmpty()) {
+                        last().already = true
+                        db.getAnimateInfoDao().updateAnimateInfoBean(animateInfoBean)
+                        toast("看完了")
+                    }
+                }
             }
         })
     }
@@ -107,11 +113,16 @@ class TodayFragment : BaseFragment() {
     }
 
     private fun sendRefreshBroadcast() {
-        val intent = Intent(AnimateWidgetProvider.REFRESH_ACTION)
-        intent.`package` = requireActivity().packageName
-        intent.putExtra("type", AnimateWidgetProvider.TYPE_AUTO)
-        requireActivity().sendBroadcast(intent)
-        Log.d(TAG, "sendRefreshBroadcast: -----------------")
+        val ids = AppWidgetManager.getInstance(requireContext())
+            .getAppWidgetIds(ComponentName(requireContext(), AnimateWidgetProvider::class.java))
+        for (id in ids) {
+            val intent = Intent(AnimateWidgetProvider.REFRESH_ACTION)
+            intent.`package` = requireActivity().packageName
+            intent.putExtra("type", AnimateWidgetProvider.TYPE_AUTO)
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+            requireActivity().sendBroadcast(intent)
+            Log.d(TAG, "sendRefreshBroadcast: -----------------")
+        }
     }
 
 }

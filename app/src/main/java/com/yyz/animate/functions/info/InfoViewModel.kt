@@ -37,14 +37,12 @@ class InfoViewModel(private val context: AppCompatActivity, id: Int) : ViewModel
     }
 
     fun observeBean(it: InfoWithName, rv: RecyclerView) {
-        if (it.infoBean.type == AnimateType.TV
-            && it.infoBean.state == AnimateState.WATCHING
-            && it.infoBean.episodeList.size <= DayUtil.getWeeks(
-                it.infoBean.airTime
-            )
+        if (it.infoBean.type == AnimateType.TV && it.infoBean.state == AnimateState.WATCHING
+            && it.infoBean.episodeList.size <= DayUtil.getWeeks(it.infoBean.airTime)
         ) {
-            updateData(it.infoBean)
-            return
+            if (updateData(it.infoBean)) {
+                return
+            }
         }
         if (!::adapter.isInitialized) {
             adapter = InfoAdapter(it.infoBean)
@@ -65,8 +63,11 @@ class InfoViewModel(private val context: AppCompatActivity, id: Int) : ViewModel
         })
     }
 
-    private fun updateData(temp: AnimateInfoBean) {
+    private fun updateData(temp: AnimateInfoBean): Boolean {
         val weeks = DayUtil.getWeeks(temp.airTime)
+        if (weeks == 0) {
+            return false
+        }
         var flag = false
         while (temp.episodeList.size <= weeks) {
             temp.episodeList.add(EpisodeState(temp.episodeList.size + 1, false))
@@ -75,6 +76,7 @@ class InfoViewModel(private val context: AppCompatActivity, id: Int) : ViewModel
         if (flag) {
             db.getAnimateInfoDao().updateAnimateInfoBean(temp)
         }
+        return flag
     }
 
 }

@@ -1,4 +1,4 @@
-package com.yyz.animate.functions.widgetservice
+package com.yyz.animate.functions.appwidget
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -24,6 +24,8 @@ import com.yyz.animate.utils.DayUtil
 class AnimateWidgetFactory(private val context: Context, intent: Intent) : RemoteViewsService.RemoteViewsFactory {
 
     private val list = mutableListOf<InfoWithName>()
+
+    //    private val mAppWidgetId = (intent.data?.schemeSpecificPart)?.toInt()?.minus(AnimateWidgetProvider.RANDOM)
     private val mAppWidgetId =
         intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     private var db: AnimateDatabase? = null
@@ -33,7 +35,10 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
             db = AnimateDatabase.getInstance(context)
         }
         updateData()
-        list.addAll(db!!.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(DayUtil.getToday()))
+        list.addAll(
+            (db ?: AnimateDatabase.getInstance(context)).getAnimateInfoDao()
+                .getInfoWithNameListFromUpdateDay(DayUtil.getToday())
+        )
     }
 
     override fun getViewAt(position: Int): RemoteViews {
@@ -47,7 +52,7 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
                 sb.append(position + 1).append(".")
                 sb.append(this[position].nameBean.name)
                 sb.append(this[position].infoBean.season)
-                sb.append("--")
+                sb.append("——")
                 sb.append(this[position].infoBean.episodeList.size)
                 sb.toString()
             }
@@ -63,7 +68,14 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
 
     override fun onDataSetChanged() {
         list.clear()
-        list.addAll(db!!.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(DayUtil.getToday()))
+        if (db == null) {
+            db = AnimateDatabase.getInstance(context)
+        }
+        list.addAll(
+            (db ?: AnimateDatabase.getInstance(context)).getAnimateInfoDao()
+                .getInfoWithNameListFromUpdateDay(DayUtil.getToday())
+        )
+
 //        list.addAll(
 //            listOf(
 //                InfoWithName(
@@ -79,12 +91,16 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
     }
 
     private fun updateData() {
-        val tempList = db!!.getAnimateInfoDao().getAnimateInfoBeanListFromUpdateDay(DayUtil.getToday())
+        if (db == null) {
+            db = AnimateDatabase.getInstance(context)
+        }
+        val tempList = (db ?: AnimateDatabase.getInstance(context)).getAnimateInfoDao()
+            .getAnimateInfoBeanListFromUpdateDay(DayUtil.getToday())
         for (temp in tempList) {
             val weeks = DayUtil.getWeeks(temp.airTime)
             while (temp.episodeList.size <= weeks) {
                 temp.episodeList.add(EpisodeState(temp.episodeList.size + 1, false))
-                db!!.getAnimateInfoDao().updateAnimateInfoBean(temp)
+                (db ?: AnimateDatabase.getInstance(context)).getAnimateInfoDao().updateAnimateInfoBean(temp)
             }
         }
 
