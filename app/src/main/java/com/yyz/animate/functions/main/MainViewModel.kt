@@ -1,4 +1,4 @@
-package com.yyz.animate
+package com.yyz.animate.functions.main
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

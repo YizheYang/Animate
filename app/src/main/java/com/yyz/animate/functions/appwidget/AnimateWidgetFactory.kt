@@ -23,7 +23,7 @@ import com.yyz.animate.utils.DayUtil
  **/
 class AnimateWidgetFactory(private val context: Context, intent: Intent) : RemoteViewsService.RemoteViewsFactory {
 
-    private val list = mutableListOf<InfoWithName>()
+    private var list = mutableListOf<InfoWithName>()
 
     //    private val mAppWidgetId = (intent.data?.schemeSpecificPart)?.toInt()?.minus(AnimateWidgetProvider.RANDOM)
     private val mAppWidgetId =
@@ -48,11 +48,19 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
             if (size == 0) {
                 "无"
             } else {
+                if (this[position].infoBean.episodeList.last().already) {
+                    views.setInt(
+                        R.id.tv_item_widget,
+                        "setBackgroundColor",
+                        context.resources.getColor(R.color.today_item_bg_already_seen)
+                    )
+                }
                 val sb = StringBuilder()
                 sb.append(position + 1).append(".")
                 sb.append(this[position].nameBean.name)
+                sb.append(" ")
                 sb.append(this[position].infoBean.season)
-                sb.append("——")
+                sb.append("—")
                 sb.append(this[position].infoBean.episodeList.size)
                 sb.toString()
             }
@@ -60,6 +68,7 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
 
         val extras = Bundle()
         extras.putInt(AnimateWidgetProvider.EXTRA_ITEM, position)
+        extras.putInt("id", list[position].infoBean.id ?: -1)
         val fillInIntent = Intent()
         fillInIntent.putExtras(extras)
         views.setOnClickFillInIntent(R.id.tv_item_widget, fillInIntent)
@@ -67,6 +76,7 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
     }
 
     override fun onDataSetChanged() {
+        list = mutableListOf()
         list.clear()
         if (db == null) {
             db = AnimateDatabase.getInstance(context)

@@ -12,7 +12,7 @@
         android:theme="@style/Theme.Animate"
         tools:targetApi="30">
         <activity
-            android:name=".MainActivity"
+            android:name=".functions.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

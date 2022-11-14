@@ -1,9 +1,11 @@
 package com.yyz.animate.functions.today
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.yyz.animate.R
 import com.yyz.animate.entity.AnimateInfoBean
@@ -23,19 +25,22 @@ class TodayAdapter(private var list: List<InfoWithName>) :
     inner class TodayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val animateName: TextView = itemView.tv_item_today_animateName
         val episode: TextView = itemView.tv_item_today_episode
+        val background: CardView = itemView.cv_item_today
     }
 
     interface OnItemClickListener {
-        fun onItemClick(animateInfoBean: AnimateInfoBean)
+        fun onItemClick(animateInfoBean: AnimateInfoBean, holder: TodayViewHolder)
     }
 
     private var onItemClickListener: OnItemClickListener? = null
+    private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodayViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_today, parent, false)
+        context = parent.context
         val holder = TodayViewHolder(view)
         holder.itemView.setOnClickListener {
-            onItemClickListener?.onItemClick(list[holder.adapterPosition].infoBean)
+            onItemClickListener?.onItemClick(list[holder.adapterPosition].infoBean, holder)
         }
         return holder
     }
@@ -52,6 +57,11 @@ class TodayAdapter(private var list: List<InfoWithName>) :
                     }
                 }
             }集"
+            if (this.infoBean.episodeList.last().already) {
+                holder.background.setCardBackgroundColor(context.resources.getColor(R.color.today_item_bg_already_seen))
+            } else {
+                holder.background.setCardBackgroundColor(context.resources.getColor(R.color.today_item_bg_not_seen))
+            }
         }
     }
 

@@ -37,7 +37,9 @@ class TodayFragment : BaseFragment() {
             if (updateData()) {
                 return@observe
             }
-            sendRefreshBroadcast()
+            if (ns_today.selectedIndex == 0) {
+                sendRefreshBroadcast()
+            }
             val list = db.getAnimateInfoDao().getInfoWithNameListFromUpdateDay(DayUtil.getToday())
             ns_today.attachDataSource(
                 listOf(
@@ -58,12 +60,20 @@ class TodayFragment : BaseFragment() {
 
     private fun setAdapterListener() {
         adapter.setOnItemClickListener(object : TodayAdapter.OnItemClickListener {
-            override fun onItemClick(animateInfoBean: AnimateInfoBean) {
+            override fun onItemClick(animateInfoBean: AnimateInfoBean, holder: TodayAdapter.TodayViewHolder) {
                 animateInfoBean.episodeList.run {
                     if (this.isNotEmpty()) {
-                        last().already = true
+                        last().already.apply {
+                            if (!this) {
+                                holder.background.setCardBackgroundColor(resources.getColor(R.color.today_item_bg_already_seen))
+                                toast("看完了")
+                            } else {
+                                holder.background.setCardBackgroundColor(resources.getColor(R.color.today_item_bg_not_seen))
+                                toast("还没看")
+                            }
+                            last().already = !this
+                        }
                         db.getAnimateInfoDao().updateAnimateInfoBean(animateInfoBean)
-                        toast("看完了")
                     }
                 }
             }

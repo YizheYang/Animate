@@ -12,4 +12,7 @@
     <color name="grey100">#80545454</color>
     <color name="grey200">#40545454</color>
     <color name="grey700">#10545454</color>
+    
+    <color name="today_item_bg_already_seen">#FFBB86FC</color>
+    <color name="today_item_bg_not_seen">#FFFFFFFF</color>
 </resources>
