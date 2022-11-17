@@ -24,7 +24,16 @@ android {
         }
     }
 
+    signingConfigs {
+        debug {
+            storeFile file("C:\\Users\\yizhiyang\\.android\\debug.keystore")
+        }
+    }
+
     buildTypes {
+        debug{
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -48,6 +57,8 @@ dependencies {
     implementation rootProject.ext.depsLibs["appcompat"]
     implementation rootProject.ext.depsLibs["fragment"]
     implementation rootProject.ext.depsLibs["lifecycle"]
+    implementation rootProject.ext.depsLibs["viewmodel"]
+    implementation rootProject.ext.depsLibs["viewmodel-ktx"]
     implementation rootProject.ext.depsLibs["material"]
     implementation rootProject.ext.depsLibs["constraintlayout"]
     testImplementation rootProject.ext.depsLibs["junit"]

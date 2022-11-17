@@ -1,5 +1,7 @@
 package com.yyz.animate.functions.list
 
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,6 +63,9 @@ class AnimateNameAdapter(private var list: List<NameWithInfo>) :
             // 例如，当需要adapter时，adapter还没初始化；如果先初始化adapter，则初始化时所需的当前name（需要holder的position）无法获得
             override fun onAnimateClick(id: Int) {
                 onItemClickListener?.onAnimateClick(id)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    holder.ll_name.performClick()
+                }, 1000)
             }
 
             override fun onLongClick(id: Int) {

@@ -48,11 +48,34 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
             if (size == 0) {
                 "无"
             } else {
+//                if (position == size - 1) {
+//                    views.setInt(
+//                        R.id.tv_item_widget,
+//                        "setBackground",
+//                        R.drawable.radius_bottom
+//                    )
+//                }
                 if (this[position].infoBean.episodeList.last().already) {
                     views.setInt(
                         R.id.tv_item_widget,
                         "setBackgroundColor",
                         context.resources.getColor(R.color.today_item_bg_already_seen)
+                    )
+                    views.setInt(
+                        R.id.tv_item_widget,
+                        "setTextColor",
+                        context.resources.getColor(R.color.widget_tv_text)
+                    )
+                } else {
+                    views.setInt(
+                        R.id.tv_item_widget,
+                        "setBackgroundColor",
+                        context.resources.getColor(R.color.today_item_bg_not_seen)
+                    )
+                    views.setInt(
+                        R.id.tv_item_widget,
+                        "setTextColor",
+                        context.resources.getColor(R.color.widget_tv_default_text)
                     )
                 }
                 val sb = StringBuilder()
