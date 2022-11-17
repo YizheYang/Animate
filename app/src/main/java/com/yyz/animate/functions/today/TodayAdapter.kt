@@ -59,8 +59,16 @@ class TodayAdapter(private var list: List<InfoWithName>) :
             }集"
             if (this.infoBean.episodeList.last().already) {
                 holder.background.setCardBackgroundColor(context.resources.getColor(R.color.today_item_bg_already_seen))
+                context.resources.getColor(R.color.today_item_tv_already_seen).let {
+                    holder.animateName.setTextColor(it)
+                    holder.episode.setTextColor(it)
+                }
             } else {
                 holder.background.setCardBackgroundColor(context.resources.getColor(R.color.today_item_bg_not_seen))
+                context.resources.getColor(R.color.today_item_tv_not_seen).let {
+                    holder.animateName.setTextColor(it)
+                    holder.episode.setTextColor(it)
+                }
             }
         }
     }

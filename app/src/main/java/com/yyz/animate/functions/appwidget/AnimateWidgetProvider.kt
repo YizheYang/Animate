@@ -105,7 +105,7 @@ class AnimateWidgetProvider : AppWidgetProvider() {
                                 rv.setInt(
                                     R.id.tv_item_widget,
                                     "setTextColor",
-                                    context.resources.getColor(R.color.widget_tv_text)
+                                    context.resources.getColor(R.color.today_item_tv_already_seen)
                                 )
                                 Toast.makeText(context, "看完了", Toast.LENGTH_SHORT).show()
                             } else {
@@ -117,7 +117,7 @@ class AnimateWidgetProvider : AppWidgetProvider() {
                                 rv.setInt(
                                     R.id.tv_item_widget,
                                     "setTextColor",
-                                    context.resources.getColor(R.color.widget_tv_default_text)
+                                    context.resources.getColor(R.color.today_item_tv_not_seen)
                                 )
                                 Toast.makeText(context, "还没看", Toast.LENGTH_SHORT).show()
                             }

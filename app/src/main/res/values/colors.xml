@@ -12,13 +12,12 @@
     <color name="grey100">#80545454</color>
     <color name="grey200">#40545454</color>
     <color name="grey700">#10545454</color>
-    <color name="defaultText">#8A000000</color>
     <color name="trans">#00000000</color>
-    
+    <color name="defaultText">#8A000000</color>
+
     <color name="today_item_bg_already_seen">@color/purple_200</color>
     <color name="today_item_bg_not_seen">@color/white</color>
-
-    <color name="widget_tv_bg">@color/purple_200</color>
-    <color name="widget_tv_text">@color/white</color>
-    <color name="widget_tv_default_text">@color/defaultText</color>
+    <color name="widget_title_bg">@color/purple_200</color>
+    <color name="today_item_tv_already_seen">@color/white</color>
+    <color name="today_item_tv_not_seen">@color/defaultText</color>
 </resources>

@@ -64,7 +64,7 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
                     views.setInt(
                         R.id.tv_item_widget,
                         "setTextColor",
-                        context.resources.getColor(R.color.widget_tv_text)
+                        context.resources.getColor(R.color.today_item_tv_already_seen)
                     )
                 } else {
                     views.setInt(
@@ -75,7 +75,7 @@ class AnimateWidgetFactory(private val context: Context, intent: Intent) : Remot
                     views.setInt(
                         R.id.tv_item_widget,
                         "setTextColor",
-                        context.resources.getColor(R.color.widget_tv_default_text)
+                        context.resources.getColor(R.color.today_item_tv_not_seen)
                     )
                 }
                 val sb = StringBuilder()

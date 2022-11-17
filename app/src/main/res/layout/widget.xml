@@ -13,7 +13,7 @@
         android:background="@drawable/radius_top"
         android:gravity="center"
         android:text="@string/today"
-        android:textColor="@color/widget_tv_text"
+        android:textColor="@color/today_item_tv_already_seen"
         android:textSize="24sp" />
 
     <ListView

@@ -5,5 +5,5 @@
     <corners
         android:topLeftRadius="@dimen/topLeft"
         android:topRightRadius="@dimen/topRight" />
-    <solid android:color="@color/widget_tv_bg" />
+    <solid android:color="@color/widget_title_bg" />
 </shape>

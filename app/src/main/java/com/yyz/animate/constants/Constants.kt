@@ -15,6 +15,8 @@ object Constants {
     const val TV = 1
 
     const val MOVIE = 2
+
+    const val animationDuration = 500
 }
 
 const val TAG = "tagtag"
